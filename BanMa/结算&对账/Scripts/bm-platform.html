@@ -1,0 +1,2259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>斑马优号 · 平台账务后台</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+  <style>
+:root {
+  --primary: #2563eb;
+  --primary-light: #eff6ff;
+  --danger: #ef4444;
+  --danger-light: #fef2f2;
+  --success: #059669;
+  --success-light: #d1fae5;
+  --warning: #d97706;
+  --warning-light: #fff7ed;
+  --sidebar-w: 220px;
+  --header-h: 56px;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-400: #9ca3af;
+  --gray-600: #4b5563;
+  --gray-800: #1f2937;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+  font-size: 14px; color: var(--gray-800); background: var(--gray-100);
+  height: 100vh; overflow: hidden;
+}
+
+.app-shell { display: flex; height: 100vh; }
+.app-sidebar {
+  width: var(--sidebar-w); background: #fff; border-right: 1px solid var(--gray-200);
+  display: flex; flex-direction: column; flex-shrink: 0;
+}
+.app-logo {
+  height: var(--header-h); display: flex; align-items: center; padding: 0 16px;
+  font-weight: 700; border-bottom: 1px solid var(--gray-200); gap: 8px;
+}
+.app-logo.seller { color: #7c3aed; }
+.app-logo.platform { color: var(--primary); }
+.app-nav { flex: 1; overflow-y: auto; padding: 12px 0; }
+.app-nav-group {
+  padding: 8px 16px 4px; font-size: 11px; color: var(--gray-400);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.app-nav-item {
+  padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+  color: var(--gray-600); font-size: 13px;
+}
+.app-nav-item:hover { background: var(--gray-50); }
+.app-nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+.app-sidebar-foot { padding: 12px 16px; border-top: 1px solid var(--gray-200); font-size: 12px; }
+.app-sidebar-foot a { color: var(--primary); text-decoration: none; }
+
+.app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.app-header {
+  height: var(--header-h); background: #fff; border-bottom: 1px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
+}
+.app-header-title { font-size: 15px; font-weight: 600; }
+.app-header-actions { display: flex; align-items: center; gap: 10px; }
+.app-content { flex: 1; overflow: auto; padding: 20px 24px; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px;
+  border-radius: 6px; border: none; cursor: pointer; font-size: 13px;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-secondary { background: #fff; border: 1px solid var(--gray-200); color: var(--gray-600); }
+.btn-danger { background: var(--danger-light); color: var(--danger); }
+.btn-success { background: var(--success-light); color: var(--success); }
+.btn-sm { padding: 6px 10px; font-size: 12px; }
+.btn-ghost { background: transparent; border: none; color: var(--primary); cursor: pointer; font-size: 13px; }
+
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--gray-100); }
+.data-table th { font-size: 12px; color: var(--gray-400); font-weight: 500; background: var(--gray-50); }
+.data-table tr { cursor: pointer; }
+.data-table tr:hover td { background: var(--gray-50); }
+.data-table tr.no-click { cursor: default; }
+
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 12px; color: var(--gray-600); margin-bottom: 6px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--gray-200);
+  border-radius: 6px; font-size: 13px;
+}
+.form-textarea { min-height: 72px; resize: vertical; }
+.form-hint { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+.page-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.page-title { font-size: 18px; font-weight: 600; }
+.filter-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+
+.card { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+.card-flat { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; padding: 0; overflow: hidden; margin-bottom: 12px; }
+
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; display: inline-block; }
+.badge-green { background: var(--success-light); color: var(--success); }
+.badge-gray { background: var(--gray-100); color: var(--gray-600); }
+.badge-orange { background: var(--warning-light); color: var(--warning); }
+.badge-blue { background: var(--primary-light); color: var(--primary); }
+.badge-red { background: var(--danger-light); color: var(--danger); }
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal { background: #fff; border-radius: 10px; width: min(520px, 92vw); max-height: 90vh; overflow: auto; }
+.modal.modal-lg { width: min(720px, 92vw); display: flex; flex-direction: column; }
+.modal.modal-lg .modal-body { flex: 1; overflow: auto; }
+.tab-bar {
+  display: flex; gap: 0; border-bottom: 1px solid var(--gray-200); background: #fff; padding: 0 8px;
+}
+.tab-bar .tab-item {
+  padding: 12px 24px; font-size: 14px; cursor: pointer; color: var(--gray-600);
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.tab-bar .tab-item.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+.list-wrap { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; overflow: hidden; }
+.list-wrap .tab-bar { border-radius: 0; border-bottom: 1px solid var(--gray-200); }
+.list-panel { overflow: hidden; }
+.action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.data-table tr.action-row { cursor: default; }
+.data-table tr.action-row:hover td { background: var(--gray-50); }
+.as-modal-head { display: flex; align-items: center; gap: 8px; }
+.as-info-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.as-info-box {
+  border: 1px solid var(--gray-200); border-radius: 8px; background: var(--gray-50); padding: 12px 14px;
+}
+.as-info-title { font-size: 13px; color: var(--gray-800); margin-bottom: 10px; font-weight: 600; }
+.as-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; }
+.as-info-grid .detail-item label { font-size: 11px; }
+.as-info-grid .detail-item span { font-size: 13px; }
+.as-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin: 8px 0 10px; }
+.as-divider { border-top: 1px solid var(--gray-200); margin: 10px 0 12px; }
+.as-amount-note {
+  color: var(--gray-400); font-size: 12px; line-height: 1.6;
+  margin: 4px 0 10px;
+}
+.as-collect-section { margin: 4px 0 12px; }
+.as-collect-section .form-label { margin-bottom: 6px; }
+.as-collect-tag-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.as-collect-tag-hint { font-size: 12px; color: var(--gray-400); }
+.as-collect-progress {
+  margin-top: 10px; padding: 12px 14px; border-radius: 8px;
+  background: #fff5f5; border: 1px solid #fecaca; color: #991b1b;
+  font-size: 13px; line-height: 1.7;
+}
+.as-collect-progress strong { color: #b91c1c; font-weight: 600; }
+.as-collect-progress .hint { color: #9f1239; font-size: 12px; margin-top: 4px; }
+.as-collect-done {
+  margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+  background: var(--primary-light); border: 1px solid #bfdbfe; color: #1e40af;
+  font-size: 13px; line-height: 1.6;
+}
+.as-upload {
+  width: 56px; height: 56px; border: 1px dashed var(--gray-400); border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 28px; color: var(--gray-600);
+  background: #fff;
+}
+.cf-voucher-grid { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; }
+.cf-voucher-item {
+  position: relative; width: 72px; height: 72px; border-radius: 8px; overflow: hidden;
+  border: 1px solid var(--gray-200); background: var(--gray-100);
+}
+.cf-voucher-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cf-voucher-remove {
+  position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(0,0,0,0.55); color: #fff; border: none; cursor: pointer; font-size: 12px;
+  display: flex; align-items: center; justify-content: center; line-height: 1; padding: 0;
+}
+.cf-voucher-add {
+  width: 72px; height: 72px; border: 1px dashed var(--gray-400); border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 26px;
+  color: var(--gray-400); background: #fff; cursor: pointer; transition: border-color 0.15s, color 0.15s;
+}
+.cf-voucher-add:hover { border-color: var(--primary); color: var(--primary); }
+.cf-voucher-hint { font-size: 11px; color: var(--gray-400); margin-top: 6px; }
+.stl-summary-card {
+  border: 1px solid var(--gray-200); border-radius: 8px; background: var(--gray-50); padding: 14px 16px;
+}
+.stl-summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 20px; }
+.stl-summary-grid .detail-item span { font-size: 15px; font-weight: 600; }
+.modal-footer-between { justify-content: space-between; align-items: center; }
+.modal-footer-actions { display: flex; gap: 8px; margin-left: auto; }
+.audit-opinion-wrap {
+  margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--gray-200);
+}
+.audit-opinion-wrap .form-label .required { color: var(--danger); margin-left: 2px; }
+.modal-header {
+  padding: 14px 18px; border-bottom: 1px solid var(--gray-100);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-body { padding: 18px; }
+.modal-footer { padding: 12px 18px; border-top: 1px solid var(--gray-100); display: flex; justify-content: flex-end; gap: 8px; }
+
+.drawer-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 200;
+  display: flex; justify-content: flex-end;
+}
+.drawer { width: min(640px, 100vw); background: #fff; height: 100%; overflow: auto; }
+.drawer-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--gray-100);
+  display: flex; justify-content: space-between; align-items: center;
+  position: sticky; top: 0; background: #fff; z-index: 1;
+}
+.drawer-body { padding: 20px; }
+
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--gray-800); color: #fff; padding: 10px 20px; border-radius: 8px;
+  font-size: 13px; z-index: 300; opacity: 0; transition: opacity 0.25s;
+}
+.toast.show { opacity: 1; }
+
+.chip-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 6px 12px; border: 1px solid var(--gray-200); border-radius: 20px;
+  font-size: 12px; cursor: pointer; background: #fff;
+}
+.chip.active { background: var(--primary-light); border-color: var(--primary); color: var(--primary); font-weight: 600; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px; }
+.stat-card {
+  background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px;
+}
+.stat-card.debt { border-color: #fecaca; background: var(--danger-light); }
+.stat-label { font-size: 12px; color: var(--gray-400); margin-bottom: 6px; }
+.stat-value { font-size: 22px; font-weight: 700; }
+.stat-value.debt { color: var(--danger); }
+.stat-hint { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+.summary-bar {
+  display: flex; gap: 24px; padding: 14px 16px; background: var(--primary-light);
+  border-radius: 8px; margin-bottom: 16px; font-size: 13px;
+}
+.summary-bar strong { color: var(--primary); }
+
+.timeline { border-left: 2px solid var(--gray-200); padding-left: 16px; margin: 12px 0; }
+.timeline-item { margin-bottom: 12px; position: relative; }
+.timeline-item::before {
+  content: ''; position: absolute; left: -21px; top: 4px;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--primary);
+}
+.timeline-time { font-size: 11px; color: var(--gray-400); }
+.timeline-desc { font-size: 13px; margin-top: 2px; }
+
+.alert {
+  padding: 12px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 12px;
+}
+.alert-warning { background: var(--warning-light); border: 1px solid #fed7aa; color: #92400e; }
+.alert-info { background: var(--primary-light); border: 1px solid #bfdbfe; color: #1e40af; }
+.alert-danger { background: var(--danger-light); border: 1px solid #fecaca; color: #991b1b; }
+
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; margin-bottom: 16px; }
+.detail-item label { display: block; font-size: 11px; color: var(--gray-400); margin-bottom: 4px; }
+.detail-item span { font-size: 14px; }
+
+.section-title { font-size: 14px; font-weight: 600; margin: 16px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-100); }
+
+.empty-state { text-align: center; padding: 40px; color: var(--gray-400); }
+
+@media (max-width: 1100px) {
+  .stat-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+
+
+.nav-badge {
+  margin-left: auto; background: var(--danger); color: #fff;
+  font-size: 10px; padding: 1px 6px; border-radius: 10px; min-width: 18px; text-align: center;
+}
+
+.risk-panel {
+  background: var(--warning-light); border: 1px solid #fed7aa;
+  border-radius: 8px; padding: 14px; margin-bottom: 16px;
+}
+.risk-panel h4 { font-size: 13px; color: #92400e; margin-bottom: 8px; }
+.risk-panel ul { font-size: 12px; color: #78350f; padding-left: 18px; }
+.risk-panel li { margin-bottom: 4px; }
+
+.recon-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+.recon-card { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; text-align: center; }
+.recon-card .label { font-size: 12px; color: var(--gray-400); }
+.recon-card .value { font-size: 22px; font-weight: 700; margin-top: 6px; }
+.recon-card.income .value { color: var(--success); }
+.recon-card.expense .value { color: var(--danger); }
+
+  </style>
+</head>
+<body>
+  <div id="app-root"></div>
+  <div id="toast" class="toast"></div>
+  <div id="overlay"></div>
+  <script>
+/**
+ * 号商账务原型 — 演示数据
+ */
+window.BM_DEMO = {
+  version: 1,
+  merchant: {
+    id: 'MCH-001',
+    name: '星辰号商行',
+    type: '号商',
+    bankAccount: {
+      name: '星辰号商行',
+      account: '6222 **** **** 8891',
+      bank: '招商银行深圳科技园支行',
+    },
+  },
+  account: {
+    pendingCredit: 3200,
+    withdrawable: 18600,
+    withdrawing: 0,
+    settled: 52000,
+    pendingAftersale: 2700,
+  },
+  orders: [
+    {
+      id: 'ORD-20260501-001',
+      productName: '王者荣耀 V10 全皮肤',
+      status: '交易完成',
+      accountStatus: '可提现',
+      userPaid: 12800,
+      platformFee: 1280,
+      compensation: 500,
+      settleAmount: 11020,
+      completedAt: '2026-05-20T14:30:00',
+    },
+    {
+      id: 'ORD-20260508-002',
+      productName: '原神 55级 满命雷神',
+      status: '交易完成',
+      accountStatus: '可提现',
+      userPaid: 4500,
+      platformFee: 450,
+      compensation: 200,
+      settleAmount: 3850,
+      completedAt: '2026-05-22T10:15:00',
+    },
+    {
+      id: 'ORD-20260515-003',
+      productName: '和平精英 战神号',
+      status: '交易完成',
+      accountStatus: '可提现',
+      userPaid: 4200,
+      platformFee: 420,
+      compensation: 150,
+      settleAmount: 3630,
+      completedAt: '2026-05-25T16:45:00',
+    },
+    {
+      id: 'ORD-20260528-004',
+      productName: '英雄联盟 钻石段位',
+      status: '交易中',
+      accountStatus: '待入账',
+      userPaid: 3200,
+      platformFee: 320,
+      compensation: 100,
+      settleAmount: 2780,
+      completedAt: null,
+    },
+    {
+      id: 'ORD-20260410-005',
+      productName: 'DNF 满级搬砖号',
+      status: '交易完成',
+      accountStatus: '已结算',
+      userPaid: 2800,
+      platformFee: 280,
+      compensation: 100,
+      settleAmount: 2420,
+      completedAt: '2026-04-15T09:00:00',
+    },
+  ],
+  withdrawals: [
+    {
+      id: 'WD-20260602-001',
+      merchantId: 'MCH-001',
+      merchantName: '星辰号商行',
+      merchantType: '号商',
+      applyTime: '2026-06-02T09:30:00',
+      amount: 18600,
+      status: '待审核',
+      settlementId: 'STL-20260602-001',
+      openAftersaleCount: 3,
+      auditor: '',
+      auditTime: '',
+      rejectReason: '',
+      payRegisterTime: '',
+      note: '',
+    },
+    {
+      id: 'WD-20260601-001',
+      merchantId: 'MCH-001',
+      merchantName: '星辰号商行',
+      merchantType: '号商',
+      applyTime: '2026-06-01T14:00:00',
+      amount: 7480,
+      status: '待审核',
+      settlementId: 'STL-20260601-001',
+      openAftersaleCount: 1,
+      auditor: '',
+      auditTime: '',
+      rejectReason: '',
+      payRegisterTime: '',
+      note: '',
+    },
+    {
+      id: 'WD-20260520-001',
+      merchantId: 'MCH-001',
+      merchantName: '星辰号商行',
+      merchantType: '号商',
+      applyTime: '2026-05-20T11:00:00',
+      amount: 11023,
+      status: '待打款',
+      settlementId: 'STL-20260520-001',
+      openAftersaleCount: 0,
+      auditor: '运营审核员',
+      auditTime: '2026-05-21T10:00:00',
+      rejectReason: '',
+      payRegisterTime: '',
+      note: '订单均已交易完成，无未完结售后影响，同意进入待打款。',
+    },
+    {
+      id: 'WD-20260518-001',
+      merchantId: 'MCH-001',
+      merchantName: '星辰号商行',
+      merchantType: '号商',
+      applyTime: '2026-05-18T16:00:00',
+      amount: 3630,
+      status: '待打款',
+      settlementId: 'STL-20260518-001',
+      openAftersaleCount: 0,
+      auditor: '运营审核员',
+      auditTime: '2026-05-19T09:30:00',
+      rejectReason: '',
+      payRegisterTime: '',
+      note: '单笔订单结算，资料齐全，审批通过。',
+    },
+    {
+      id: 'WD-20260425-001',
+      merchantId: 'MCH-001',
+      merchantName: '星辰号商行',
+      merchantType: '号商',
+      applyTime: '2026-04-25T10:00:00',
+      amount: 2420,
+      status: '已完结',
+      settlementId: 'STL-20260425-001',
+      openAftersaleCount: 0,
+      auditor: '运营审核员',
+      auditTime: '2026-04-25T14:00:00',
+      rejectReason: '',
+      payRegisterTime: '2026-04-25T16:30:00',
+      note: '首笔提现，结算单核对无误，审批通过。',
+    },
+    {
+      id: 'WD-20260512-001',
+      merchantId: 'MCH-001',
+      merchantName: '星辰号商行',
+      merchantType: '号商',
+      applyTime: '2026-05-12T16:00:00',
+      amount: 8500,
+      status: '已驳回',
+      settlementId: 'STL-20260512-001',
+      openAftersaleCount: 2,
+      auditor: '运营审核员',
+      auditTime: '2026-05-13T10:00:00',
+      rejectReason: '存在未完结售后单，请处理后再申请',
+      payRegisterTime: '',
+      note: '',
+    },
+  ],
+  settlements: [
+    {
+      id: 'STL-20260602-001',
+      withdrawalId: 'WD-20260602-001',
+      merchantId: 'MCH-001',
+      merchantName: '星辰号商行',
+      merchantType: '号商',
+      bankAccount: { name: '星辰号商行', account: '6222 **** **** 8891', bank: '招商银行深圳科技园支行' },
+      createdAt: '2026-06-02T09:30:00',
+      note: '卖家申请全额提现，待运营审批',
+      totalAmount: 18600,
+      orderCount: 3,
+      userPaidTotal: 21500,
+      feeTotal: 2150,
+      compTotal: 850,
+      status: '未结算',
+      orders: [
+        { seq: 1, orderId: 'ORD-20260501-001', productName: '王者荣耀 V10 全皮肤', orderStatus: '交易完成', userPaid: 12800, platformFee: 1280, compensation: 500, settleAmount: 11020 },
+        { seq: 2, orderId: 'ORD-20260508-002', productName: '原神 55级 满命雷神', orderStatus: '交易完成', userPaid: 4500, platformFee: 450, compensation: 200, settleAmount: 3850 },
+        { seq: 3, orderId: 'ORD-20260515-003', productName: '和平精英 战神号', orderStatus: '交易完成', userPaid: 4200, platformFee: 420, compensation: 150, settleAmount: 3630 },
+      ],
+      payment: null,
+    },
+    {
+      id: 'STL-20260601-001',
+      withdrawalId: 'WD-20260601-001',
+      merchantId: 'MCH-001',
+      merchantName: '星辰号商行',
+      merchantType: '号商',
+      bankAccount: { name: '星辰号商行', account: '6222 **** **** 8891', bank: '招商银行深圳科技园支行' },
+      createdAt: '2026-06-01T14:00:00',
+      note: '卖家申请部分可提现订单结算',
+      totalAmount: 7480,
+      orderCount: 2,
+      userPaidTotal: 8700,
+      feeTotal: 870,
+      compTotal: 350,
+      status: '未结算',
+      orders: [
+        { seq: 1, orderId: 'ORD-20260508-002', productName: '原神 55级 满命雷神', orderStatus: '交易完成', userPaid: 4500, platformFee: 450, compensation: 200, settleAmount: 3850 },
+        { seq: 2, orderId: 'ORD-20260515-003', productName: '和平精英 战神号', orderStatus: '交易完成', userPaid: 4200, platformFee: 420, compensation: 150, settleAmount: 3630 },
+      ],
+      payment: null,
+    },
+    {
+      id: 'STL-20260520-001',
+      withdrawalId: 'WD-20260520-001',
+      merchantId: 'MCH-001',
+      merchantName: '星辰号商行',
+      merchantType: '号商',
+      bankAccount: { name: '星辰号商行', account: '6222 **** **** 8891', bank: '招商银行深圳科技园支行' },
+      createdAt: '2026-05-20T11:00:00',
+      note: '审批通过，待财务打款',
+      totalAmount: 11023,
+      orderCount: 1,
+      userPaidTotal: 12800,
+      feeTotal: 1280,
+      compTotal: 500,
+      status: '未结算',
+      orders: [
+        { seq: 1, orderId: 'ORD-20260501-001', productName: '王者荣耀 V10 全皮肤', orderStatus: '交易完成', userPaid: 12800, platformFee: 1280, compensation: 500, settleAmount: 11023 },
+      ],
+      payment: null,
+    },
+    {
+      id: 'STL-20260518-001',
+      withdrawalId: 'WD-20260518-001',
+      merchantId: 'MCH-001',
+      merchantName: '星辰号商行',
+      merchantType: '号商',
+      bankAccount: { name: '星辰号商行', account: '6222 **** **** 8891', bank: '招商银行深圳科技园支行' },
+      createdAt: '2026-05-18T16:00:00',
+      note: '审批通过，待财务打款',
+      totalAmount: 3630,
+      orderCount: 1,
+      userPaidTotal: 4200,
+      feeTotal: 420,
+      compTotal: 150,
+      status: '未结算',
+      orders: [
+        { seq: 1, orderId: 'ORD-20260515-003', productName: '和平精英 战神号', orderStatus: '交易完成', userPaid: 4200, platformFee: 420, compensation: 150, settleAmount: 3630 },
+      ],
+      payment: null,
+    },
+    {
+      id: 'STL-20260425-001',
+      withdrawalId: 'WD-20260425-001',
+      merchantId: 'MCH-001',
+      merchantName: '星辰号商行',
+      merchantType: '号商',
+      bankAccount: { name: '星辰号商行', account: '6222 **** **** 8891', bank: '招商银行深圳科技园支行' },
+      createdAt: '2026-04-25T10:00:00',
+      note: '卖家申请全额提现',
+      totalAmount: 2420,
+      orderCount: 1,
+      userPaidTotal: 2800,
+      feeTotal: 280,
+      compTotal: 100,
+      status: '已结算',
+      orders: [
+        { seq: 1, orderId: 'ORD-20260410-005', productName: 'DNF 满级搬砖号', orderStatus: '交易完成', userPaid: 2800, platformFee: 280, compensation: 100, settleAmount: 2420 },
+      ],
+      payment: { payDate: '2026-04-25', actualAmount: 2420, bankRef: 'BK20260425001', registrar: '财务专员', registerTime: '2026-04-25T16:30:00', note: '' },
+    },
+    {
+      id: 'STL-20260512-001',
+      withdrawalId: 'WD-20260512-001',
+      merchantId: 'MCH-001',
+      merchantName: '星辰号商行',
+      merchantType: '号商',
+      bankAccount: { name: '星辰号商行', account: '6222 **** **** 8891', bank: '招商银行深圳科技园支行' },
+      createdAt: '2026-05-12T16:00:00',
+      note: '提现驳回，结算单作废',
+      totalAmount: 8500,
+      orderCount: 2,
+      userPaidTotal: 9800,
+      feeTotal: 980,
+      compTotal: 320,
+      status: '已作废',
+      orders: [],
+      payment: null,
+    },
+  ],
+  aftersales: [
+    {
+      id: 'AS-20260510-001',
+      orderId: 'ORD-20260410-005',
+      productName: 'DNF 满级搬砖号',
+      applicant: '买家用户A',
+      aftersaleType: '账号冻结或新设备',
+      status: '处理中',
+      collectTag: '待追款',
+      refundAmount: 1500,
+      merchantPayable: 1400,
+      platformPayable: 100,
+      merchantPaid: 0,
+      handler: '客服小李',
+      createdAt: '2026-05-10T09:00:00',
+      note: '账号与描述不符，号商有责',
+    },
+    {
+      id: 'AS-20260520-002',
+      orderId: 'ORD-20260501-001',
+      productName: '王者荣耀 V10 全皮肤',
+      applicant: '买家用户B',
+      aftersaleType: '账号找回',
+      status: '待处理',
+      collectTag: '无需追款',
+      refundAmount: 0,
+      merchantPayable: 0,
+      platformPayable: 0,
+      merchantPaid: 0,
+      handler: '',
+      createdAt: '2026-05-28T11:20:00',
+      note: '买家反馈皮肤数量不符',
+    },
+    {
+      id: 'AS-20260518-003',
+      orderId: 'ORD-20260508-002',
+      productName: '原神 55级 满命雷神',
+      applicant: '买家用户C',
+      aftersaleType: '其他',
+      status: '处理中',
+      collectTag: '待追款',
+      refundAmount: 800,
+      merchantPayable: 500,
+      platformPayable: 300,
+      merchantPaid: 200,
+      handler: '客服小王',
+      createdAt: '2026-05-18T15:30:00',
+      note: '正在与号商核实，号商已部分补缴 ¥200',
+    },
+    {
+      id: 'AS-20260505-004',
+      orderId: 'ORD-20260410-005',
+      productName: 'DNF 满级搬砖号',
+      applicant: '买家用户D',
+      aftersaleType: '账号冻结或新设备',
+      status: '已拒绝',
+      collectTag: '无需追款',
+      refundAmount: 0,
+      merchantPayable: 0,
+      platformPayable: 0,
+      merchantPaid: 0,
+      handler: '客服小张',
+      createdAt: '2026-05-05T10:00:00',
+      note: '买家恶意退款，证据不足',
+    },
+    {
+      id: 'AS-20260420-005',
+      orderId: 'ORD-20260410-005',
+      productName: 'DNF 满级搬砖号',
+      applicant: '买家用户E',
+      aftersaleType: '账号找回',
+      status: '已完结',
+      collectTag: '已追清',
+      refundAmount: 600,
+      merchantPayable: 500,
+      platformPayable: 100,
+      merchantPaid: 500,
+      handler: '客服小李',
+      createdAt: '2026-04-20T14:00:00',
+      note: '号商已转账，平台已退款给用户',
+    },
+    {
+      id: 'AS-20260501-006',
+      orderId: 'ORD-20260515-003',
+      productName: '和平精英 战神号',
+      applicant: '买家用户F',
+      aftersaleType: '账号找回',
+      status: '已完结',
+      collectTag: '待追款',
+      refundAmount: 1200,
+      merchantPayable: 800,
+      platformPayable: 400,
+      merchantPaid: 0,
+      handler: '客服小李',
+      createdAt: '2026-05-01T11:00:00',
+      note: '客诉已结案并退款，号商追款仍在进行中',
+    },
+  ],
+  cashflows: [
+    {
+      id: 'CF-20260415-001',
+      time: '2026-04-15T11:00:00',
+      bizType: '买家付款',
+      refNo: 'ORD-20260410-005',
+      direction: '收入',
+      amount: 2800,
+      payer: '买家用户E',
+      payee: '斑马优号平台',
+      channel: '支付宝',
+      note: '',
+    },
+    {
+      id: 'CF-20260425-001',
+      time: '2026-04-25T16:30:00',
+      bizType: '卖家结算',
+      refNo: 'STL-20260425-001',
+      direction: '支出',
+      amount: 2420,
+      payer: '斑马优号平台',
+      payee: '星辰号商行',
+      channel: '银行转账',
+      note: '首次结算打款',
+    },
+    {
+      id: 'CF-20260501-001',
+      time: '2026-05-01T09:15:00',
+      bizType: '买家付款',
+      refNo: 'ORD-20260501-001',
+      direction: '收入',
+      amount: 12800,
+      payer: '买家用户B',
+      payee: '斑马优号平台',
+      channel: '微信',
+      note: '',
+    },
+    {
+      id: 'CF-20260508-001',
+      time: '2026-05-08T14:20:00',
+      bizType: '买家付款',
+      refNo: 'ORD-20260508-002',
+      direction: '收入',
+      amount: 4500,
+      payer: '买家用户C',
+      payee: '斑马优号平台',
+      channel: '支付宝',
+      note: '',
+    },
+    {
+      id: 'CF-20260510-001',
+      time: '2026-05-10T15:00:00',
+      bizType: '售后处理',
+      refNo: 'AS-20260510-001',
+      direction: '支出',
+      amount: 1500,
+      payer: '斑马优号平台',
+      payee: '买家用户A',
+      channel: '银行转账',
+      note: '平台垫付退款',
+    },
+    {
+      id: 'CF-20260422-001',
+      time: '2026-04-22T10:00:00',
+      bizType: '售后处理',
+      refNo: 'AS-20260420-005',
+      direction: '收入',
+      amount: 500,
+      payer: '星辰号商行',
+      payee: '斑马优号平台',
+      channel: '银行转账',
+      note: '号商售后追回',
+    },
+    {
+      id: 'CF-20260519-001',
+      time: '2026-05-19T10:00:00',
+      bizType: '售后处理',
+      refNo: 'AS-20260518-003',
+      direction: '收入',
+      amount: 200,
+      payer: '星辰号商行',
+      payee: '斑马优号平台',
+      channel: '微信',
+      note: '号商部分补缴，仍待追款',
+    },
+  ],
+  activityLog: [
+    { time: '2026-05-25T16:45:00', type: '订单入账', desc: 'ORD-20260515-003 交易完成，¥3,630 转入可提现' },
+    { time: '2026-05-22T10:15:00', type: '订单入账', desc: 'ORD-20260508-002 交易完成，¥3,850 转入可提现' },
+    { time: '2026-05-20T14:30:00', type: '订单入账', desc: 'ORD-20260501-001 交易完成，¥11,020 转入可提现' },
+    { time: '2026-05-10T15:00:00', type: '售后垫付', desc: 'AS-20260510-001 平台垫付 ¥1,500，待追款' },
+  ],
+  nextIds: {
+    withdrawal: 3,
+    settlement: 3,
+    cashflow: 10,
+  },
+};
+
+  </script>
+  <script>
+/**
+ * 号商账务原型 — 共享业务逻辑
+ */
+(function (global) {
+  const STORAGE_KEY = 'bm_seller_prototype_v1';
+
+  const WITHDRAWAL_STATUS = {
+    PENDING_AUDIT: '待审核',
+    PENDING_PAY: '待打款',
+    REJECTED: '已驳回',
+    CANCELLED: '已撤销',
+    COMPLETED: '已完结',
+  };
+
+  const SETTLEMENT_STATUS = {
+    UNSETTLED: '未结算',
+    VOID: '已作废',
+    SETTLED: '已结算',
+  };
+
+  const AFTERSALE_STATUS = {
+    PENDING: '待处理',
+    PROCESSING: '处理中',
+    REJECTED: '已拒绝',
+    COMPLETED: '已完结',
+  };
+
+  const COLLECT_TAG = {
+    NONE: '无需追款',
+    PENDING: '待追款',
+    CLEARED: '已追清',
+  };
+
+  function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+  }
+
+  function nowISO() {
+    return new Date().toISOString();
+  }
+
+  function fmtMoney(n) {
+    return '¥' + Number(n || 0).toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return '-';
+    const d = new Date(iso);
+    return d.toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  }
+
+  function fmtDateShort(iso) {
+    if (!iso) return '-';
+    return iso.slice(0, 10);
+  }
+
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  const BMStore = {
+    STORAGE_KEY,
+    WITHDRAWAL_STATUS,
+    SETTLEMENT_STATUS,
+    AFTERSALE_STATUS,
+    COLLECT_TAG,
+    fmtMoney,
+    fmtDate,
+    fmtDateShort,
+    escapeHtml,
+
+    
+    loadState() {
+      try {
+        if (window.opener && !window.opener.closed && window.opener.BMStore) {
+          const s = this.migrateState(window.opener.BMStore.loadState());
+          this.saveState(s);
+          return s;
+        }
+      } catch (_) {}
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return this.migrateState(JSON.parse(raw));
+      } catch (_) { /* ignore */ }
+      return this.migrateState(deepClone(global.BM_DEMO));
+    },
+
+    migrateState(state) {
+      (state.aftersales || []).forEach((a) => {
+        if (a.status === '追款中') a.status = AFTERSALE_STATUS.PROCESSING;
+        a.merchantPaid = this.getAftersaleIncomeTotal(state, a.id);
+        if (!a.collectTag) {
+          if ((a.merchantPayable || 0) > 0) {
+            a.collectTag = a.merchantPaid >= a.merchantPayable - 0.01
+              ? COLLECT_TAG.CLEARED : COLLECT_TAG.PENDING;
+          } else {
+            a.collectTag = COLLECT_TAG.NONE;
+          }
+        }
+      });
+      this.recalcPendingAftersale(state);
+      return state;
+    },
+
+    getAftersaleIncomeTotal(state, aftersaleId) {
+      return (state.cashflows || [])
+        .filter((c) => c.bizType === '售后处理' && c.refNo === aftersaleId && c.direction === '收入')
+        .reduce((s, c) => s + (Number(c.amount) || 0), 0);
+    },
+
+    recalcPendingAftersale(state) {
+      state.account.pendingAftersale = (state.aftersales || [])
+        .filter((a) => a.collectTag === COLLECT_TAG.PENDING)
+        .reduce((s, a) => s + (Number(a.merchantPayable) || 0), 0);
+    },
+
+    applyCollectTagFromAmounts(a) {
+      if (a.collectTag === COLLECT_TAG.CLEARED) return;
+      const merchant = Number(a.merchantPayable) || 0;
+      a.collectTag = merchant > 0 ? COLLECT_TAG.PENDING : COLLECT_TAG.NONE;
+    },
+
+    saveState(state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    },
+
+    resetDemo() {
+      const state = this.migrateState(deepClone(global.BM_DEMO));
+      this.saveState(state);
+      return state;
+    },
+
+    getTotalAssets(account) {
+      return (account.pendingCredit || 0) + (account.withdrawable || 0) +
+        (account.withdrawing || 0) + (account.settled || 0);
+    },
+
+    getWithdrawableOrders(state) {
+      return (state.orders || []).filter((o) => o.accountStatus === '可提现');
+    },
+
+    getActiveWithdrawal(state) {
+      return (state.withdrawals || []).find((w) =>
+        w.status === WITHDRAWAL_STATUS.PENDING_AUDIT || w.status === WITHDRAWAL_STATUS.PENDING_PAY);
+    },
+
+    getOpenAftersales(state) {
+      return (state.aftersales || []).filter((a) =>
+        a.status === AFTERSALE_STATUS.PENDING ||
+        a.status === AFTERSALE_STATUS.PROCESSING);
+    },
+
+    getPendingCollectAftersales(state) {
+      return (state.aftersales || []).filter((a) => a.collectTag === COLLECT_TAG.PENDING);
+    },
+
+    getSettlementByWithdrawal(state, withdrawalId) {
+      return (state.settlements || []).find((s) => s.withdrawalId === withdrawalId);
+    },
+
+    nextId(state, key, prefix) {
+      const n = state.nextIds[key] || 1;
+      state.nextIds[key] = n + 1;
+      const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      return `${prefix}-${date}-${String(n).padStart(3, '0')}`;
+    },
+
+    addLog(state, type, desc) {
+      if (!state.activityLog) state.activityLog = [];
+      state.activityLog.unshift({ time: nowISO(), type, desc });
+      if (state.activityLog.length > 30) state.activityLog.length = 30;
+    },
+
+    applyWithdrawal(state) {
+      const active = this.getActiveWithdrawal(state);
+      if (active) return { ok: false, msg: '已有进行中的提现申请' };
+      const amount = state.account.withdrawable || 0;
+      if (amount <= 0) return { ok: false, msg: '当前无可提现金额' };
+
+      const orders = this.getWithdrawableOrders(state);
+      const wId = this.nextId(state, 'withdrawal', 'WD');
+      const sId = this.nextId(state, 'settlement', 'STL');
+      const t = nowISO();
+
+      const userPaidTotal = orders.reduce((s, o) => s + o.userPaid, 0);
+      const feeTotal = orders.reduce((s, o) => s + o.platformFee, 0);
+      const compTotal = orders.reduce((s, o) => s + o.compensation, 0);
+
+      const withdrawal = {
+        id: wId,
+        merchantId: state.merchant.id,
+        merchantName: state.merchant.name,
+        merchantType: state.merchant.type,
+        applyTime: t,
+        amount,
+        status: WITHDRAWAL_STATUS.PENDING_AUDIT,
+        settlementId: sId,
+        openAftersaleCount: this.getOpenAftersales(state).length,
+        auditor: '',
+        auditTime: '',
+        rejectReason: '',
+        payRegisterTime: '',
+        note: '',
+      };
+
+      const settlement = {
+        id: sId,
+        withdrawalId: wId,
+        merchantId: state.merchant.id,
+        merchantName: state.merchant.name,
+        merchantType: state.merchant.type,
+        bankAccount: deepClone(state.merchant.bankAccount),
+        createdAt: t,
+        note: '卖家申请全额提现，系统自动生成结算单',
+        totalAmount: amount,
+        orderCount: orders.length,
+        userPaidTotal,
+        feeTotal,
+        compTotal,
+        status: SETTLEMENT_STATUS.UNSETTLED,
+        orders: orders.map((o, i) => ({
+          seq: i + 1,
+          orderId: o.id,
+          productName: o.productName,
+          orderStatus: o.status,
+          userPaid: o.userPaid,
+          platformFee: o.platformFee,
+          compensation: o.compensation,
+          settleAmount: o.settleAmount,
+        })),
+        payment: null,
+      };
+
+      state.withdrawals.unshift(withdrawal);
+      state.settlements.unshift(settlement);
+      state.account.withdrawing = (state.account.withdrawing || 0) + amount;
+      state.account.withdrawable = 0;
+      this.addLog(state, '申请提现', `${wId} 申请提现 ${fmtMoney(amount)}，关联结算单 ${sId}`);
+      this.saveState(state);
+      return { ok: true, withdrawalId: wId };
+    },
+
+    cancelWithdrawal(state, withdrawalId) {
+      const w = (state.withdrawals || []).find((x) => x.id === withdrawalId);
+      if (!w) return { ok: false, msg: '提现单不存在' };
+      if (w.status !== WITHDRAWAL_STATUS.PENDING_AUDIT) return { ok: false, msg: '仅待审核状态可撤销' };
+
+      const s = this.getSettlementByWithdrawal(state, withdrawalId);
+      w.status = WITHDRAWAL_STATUS.CANCELLED;
+      if (s) s.status = SETTLEMENT_STATUS.VOID;
+      state.account.withdrawable = (state.account.withdrawable || 0) + w.amount;
+      state.account.withdrawing = Math.max(0, (state.account.withdrawing || 0) - w.amount);
+      this.addLog(state, '撤销提现', `${w.id} 已撤销，¥${w.amount} 退回可提现`);
+      this.saveState(state);
+      return { ok: true };
+    },
+
+    approveWithdrawal(state, withdrawalId, opinion) {
+      const w = (state.withdrawals || []).find((x) => x.id === withdrawalId);
+      if (!w || w.status !== WITHDRAWAL_STATUS.PENDING_AUDIT) return { ok: false, msg: '状态不允许审批' };
+      w.status = WITHDRAWAL_STATUS.PENDING_PAY;
+      w.auditor = '运营审核员';
+      w.auditTime = nowISO();
+      if (opinion && opinion.trim()) w.note = opinion.trim();
+      this.addLog(state, '提现审批', `${w.id} 审批通过，进入待打款`);
+      this.saveState(state);
+      return { ok: true };
+    },
+
+    rejectWithdrawal(state, withdrawalId, reason) {
+      const w = (state.withdrawals || []).find((x) => x.id === withdrawalId);
+      if (!w || w.status !== WITHDRAWAL_STATUS.PENDING_AUDIT) return { ok: false, msg: '状态不允许驳回' };
+      if (!reason || !reason.trim()) return { ok: false, msg: '请填写驳回原因' };
+
+      const s = this.getSettlementByWithdrawal(state, withdrawalId);
+      w.status = WITHDRAWAL_STATUS.REJECTED;
+      w.rejectReason = reason.trim();
+      w.auditor = '运营审核员';
+      w.auditTime = nowISO();
+      if (s) s.status = SETTLEMENT_STATUS.VOID;
+      state.account.withdrawable = (state.account.withdrawable || 0) + w.amount;
+      state.account.withdrawing = Math.max(0, (state.account.withdrawing || 0) - w.amount);
+      this.addLog(state, '提现驳回', `${w.id} 已驳回：${reason}`);
+      this.saveState(state);
+      return { ok: true };
+    },
+
+    registerPayment(state, withdrawalId, payment) {
+      const w = (state.withdrawals || []).find((x) => x.id === withdrawalId);
+      if (!w || w.status !== WITHDRAWAL_STATUS.PENDING_PAY) return { ok: false, msg: '状态不允许登记打款' };
+
+      const s = this.getSettlementByWithdrawal(state, withdrawalId);
+      const t = nowISO();
+      w.status = WITHDRAWAL_STATUS.COMPLETED;
+      w.payRegisterTime = t;
+      if (s) {
+        s.status = SETTLEMENT_STATUS.SETTLED;
+        s.payment = {
+          payDate: payment.payDate,
+          actualAmount: payment.actualAmount,
+          bankRef: payment.bankRef,
+          registrar: '财务专员',
+          registerTime: t,
+          note: payment.note || '',
+        };
+        (s.orders || []).forEach((o) => {
+          const order = (state.orders || []).find((x) => x.id === o.orderId);
+          if (order) order.accountStatus = '已结算';
+        });
+      }
+
+      state.account.settled = (state.account.settled || 0) + w.amount;
+      state.account.withdrawing = Math.max(0, (state.account.withdrawing || 0) - w.amount);
+
+      const cfId = this.nextId(state, 'cashflow', 'CF');
+      state.cashflows.unshift({
+        id: cfId,
+        time: payment.payDate + 'T12:00:00',
+        bizType: '卖家结算',
+        refNo: s ? s.id : w.id,
+        direction: '支出',
+        amount: payment.actualAmount,
+        payer: '斑马优号平台',
+        payee: state.merchant.name,
+        channel: '银行转账',
+        note: payment.note || '',
+      });
+
+      this.addLog(state, '结算处理', `结算单 ${s ? s.id : ''} 打款完成 ${fmtMoney(payment.actualAmount)}`);
+      this.saveState(state);
+      return { ok: true };
+    },
+
+    registerSettlementPayment(state, settlementId, payment) {
+      const s = (state.settlements || []).find((x) => x.id === settlementId);
+      if (!s) return { ok: false, msg: '结算单不存在' };
+      if (s.status !== SETTLEMENT_STATUS.UNSETTLED) return { ok: false, msg: '该结算单不可打款' };
+      return this.registerPayment(state, s.withdrawalId, payment);
+    },
+
+    getPendingSettlements(state) {
+      return (state.settlements || []).filter((s) => s.status === SETTLEMENT_STATUS.UNSETTLED);
+    },
+
+    acceptAftersale(state, id) {
+      const a = (state.aftersales || []).find((x) => x.id === id);
+      if (!a || a.status !== AFTERSALE_STATUS.PENDING) return { ok: false, msg: '状态不允许受理' };
+      a.status = AFTERSALE_STATUS.PROCESSING;
+      a.handler = a.handler || '客服专员';
+      this.saveState(state);
+      return { ok: true };
+    },
+
+    updateAftersaleAmounts(state, id, amounts) {
+      const a = (state.aftersales || []).find((x) => x.id === id);
+      if (!a) return { ok: false, msg: '售后单不存在' };
+      if (a.collectTag === COLLECT_TAG.CLEARED) {
+        return { ok: false, msg: '已追清售后单不可修改金额' };
+      }
+      const refund = Number(amounts.refundAmount) || 0;
+      const merchant = Number(amounts.merchantPayable) || 0;
+      const platform = Number(amounts.platformPayable) || 0;
+      if (Math.abs(refund - merchant - platform) > 0.01) {
+        return { ok: false, msg: '退款金额须等于号商应付 + 平台应付' };
+      }
+      a.refundAmount = refund;
+      a.merchantPayable = merchant;
+      a.platformPayable = platform;
+      this.applyCollectTagFromAmounts(a);
+      a.merchantPaid = this.getAftersaleIncomeTotal(state, a.id);
+      this.recalcPendingAftersale(state);
+      this.saveState(state);
+      return { ok: true };
+    },
+
+    rejectAftersale(state, id) {
+      const a = (state.aftersales || []).find((x) => x.id === id);
+      if (!a || a.status !== AFTERSALE_STATUS.PROCESSING) return { ok: false, msg: '状态不允许拒绝' };
+      a.status = AFTERSALE_STATUS.REJECTED;
+      a.collectTag = COLLECT_TAG.NONE;
+      this.recalcPendingAftersale(state);
+      this.saveState(state);
+      return { ok: true };
+    },
+
+    completeAftersale(state, id) {
+      const a = (state.aftersales || []).find((x) => x.id === id);
+      if (!a || a.status !== AFTERSALE_STATUS.PROCESSING) return { ok: false, msg: '状态不允许完结' };
+      a.status = AFTERSALE_STATUS.COMPLETED;
+      this.addLog(state, '售后完结', `${a.id} 售后已完结${a.collectTag === COLLECT_TAG.PENDING ? '，追款标签仍为待追款' : ''}`);
+      this.saveState(state);
+      return { ok: true };
+    },
+
+    tryMarkCollectCleared(state, id) {
+      const a = (state.aftersales || []).find((x) => x.id === id);
+      if (!a || a.collectTag !== COLLECT_TAG.PENDING) return { changed: false };
+
+      const income = this.getAftersaleIncomeTotal(state, id);
+      a.merchantPaid = income;
+      const remaining = Math.max(0, (a.merchantPayable || 0) - income);
+      if (remaining > 0.01) return { changed: false, remaining };
+
+      const payable = a.merchantPayable;
+      a.collectTag = COLLECT_TAG.CLEARED;
+      this.recalcPendingAftersale(state);
+      this.addLog(state, '追款已追清', `${a.id} 收入 ${fmtMoney(income)} 已达号商应付，待售后减少 ${fmtMoney(payable)}`);
+      this.saveState(state);
+      return { changed: true };
+    },
+
+    registerAftersaleCashflow(state, id, entry) {
+      const a = (state.aftersales || []).find((x) => x.id === id);
+      if (!a) return { ok: false, msg: '售后单不存在' };
+
+      const amount = Number(entry.amount) || 0;
+      if (amount <= 0) return { ok: false, msg: '金额须大于 0' };
+
+      const cfId = this.nextId(state, 'cashflow', 'CF');
+      const direction = entry.direction || '收入';
+      state.cashflows.unshift({
+        id: cfId,
+        time: nowISO(),
+        bizType: '售后处理',
+        refNo: a.id,
+        direction,
+        amount,
+        payer: direction === '收入' ? state.merchant.name : '斑马优号平台',
+        payee: direction === '收入' ? '斑马优号平台' : '买家',
+        channel: entry.channel || '银行转账',
+        note: entry.note || '',
+      });
+
+      if (direction === '收入') {
+        a.merchantPaid = this.getAftersaleIncomeTotal(state, a.id);
+        const cleared = this.tryMarkCollectCleared(state, id);
+        if (cleared.changed) {
+          return { ok: true, cleared: true };
+        }
+        return { ok: true, cleared: false, remaining: cleared.remaining };
+      }
+      this.saveState(state);
+      return { ok: true };
+    },
+
+    updateAftersaleMeta(state, id, payload) {
+      const a = (state.aftersales || []).find((x) => x.id === id);
+      if (!a) return { ok: false, msg: '售后单不存在' };
+      if (payload.aftersaleType) a.aftersaleType = payload.aftersaleType;
+      if (payload.status) a.status = payload.status;
+      this.saveState(state);
+      return { ok: true };
+    },
+
+    filterCashflows(state, filters) {
+      let list = (state.cashflows || []).slice();
+      if (filters.bizType) list = list.filter((c) => c.bizType === filters.bizType);
+      if (filters.direction) list = list.filter((c) => c.direction === filters.direction);
+      if (filters.dateFrom) list = list.filter((c) => c.time.slice(0, 10) >= filters.dateFrom);
+      if (filters.dateTo) list = list.filter((c) => c.time.slice(0, 10) <= filters.dateTo);
+      return list.sort((a, b) => (b.time > a.time ? 1 : -1));
+    },
+
+    statusBadgeClass(status) {
+      const map = {
+        '待审核': 'badge-orange',
+        '待打款': 'badge-blue',
+        '已驳回': 'badge-red',
+        '已撤销': 'badge-gray',
+        '已完结': 'badge-green',
+        '待处理': 'badge-orange',
+        '处理中': 'badge-blue',
+        '已拒绝': 'badge-gray',
+        '未结算': 'badge-orange',
+        '已作废': 'badge-gray',
+        '已结算': 'badge-green',
+      };
+      return map[status] || 'badge-gray';
+    },
+
+    collectTagBadgeClass(tag) {
+      const map = {
+        '无需追款': 'badge-gray',
+        '待追款': 'badge-orange',
+        '已追清': 'badge-green',
+      };
+      return map[tag] || 'badge-gray';
+    },
+
+    exportCashflowsCsv(state, filters) {
+      const rows = this.filterCashflows(state, filters);
+      const header = ['流水单号', '时间', '业务类型', '关联单号', '方向', '金额', '付款方', '收款方', '渠道', '备注'];
+      const lines = [header.join(',')];
+      rows.forEach((r) => {
+        lines.push([
+          r.id, r.time, r.bizType, r.refNo, r.direction, r.amount,
+          r.payer, r.payee, r.channel, (r.note || '').replace(/,/g, '，'),
+        ].join(','));
+      });
+      return '\uFEFF' + lines.join('\n');
+    },
+  };
+
+  global.BMStore = BMStore;
+})(typeof window !== 'undefined' ? window : global);
+
+  </script>
+  <script>
+/**
+ * 平台端可交互原型
+ */
+(function () {
+  const S = BMStore;
+  let state = S.loadState();
+  let route = { page: 'aftersales', id: '' };
+  let ui = {
+    aftersaleTab: '',
+    withdrawTab: 'pending',
+    settlementTab: 'pending',
+    reconBiz: '',
+    reconDir: '',
+    reconFrom: '2026-04-01',
+    reconTo: '2026-06-30',
+  };
+
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast show';
+    setTimeout(() => { el.className = 'toast'; }, 2400);
+  }
+
+  function navigate(page, id) {
+    route.page = page;
+    route.id = id || '';
+    location.hash = id ? `#/${page}/${id}` : `#/${page}`;
+    render();
+  }
+
+  function parseRoute() {
+    const parts = (location.hash || '#/aftersales').slice(2).split('/');
+    route.page = parts[0] || 'aftersales';
+    route.id = parts[1] || '';
+  }
+
+  function openModal(html) {
+    const isFullModal = html.trimStart().startsWith('<div class="modal');
+    document.getElementById('overlay').innerHTML =
+      `<div class="modal-overlay" onclick="PlatformApp.closeModal(event)">
+        ${isFullModal ? html : `<div class="modal" onclick="event.stopPropagation()">${html}</div>`}
+      </div>`;
+    if (isFullModal) {
+      const modal = document.querySelector('#overlay .modal');
+      if (modal) modal.addEventListener('click', (e) => e.stopPropagation());
+    }
+  }
+
+  function bindModalClose() {
+    document.querySelectorAll('[data-modal-close]').forEach((el) => {
+      el.addEventListener('click', closeOverlay);
+    });
+  }
+
+  function closeOverlay() {
+    document.getElementById('overlay').innerHTML = '';
+  }
+
+  function buildAftersaleProcessBody(a) {
+    const order = (state.orders || []).find((o) => o.id === a.orderId);
+    const frozen = a.status === '已完结' || a.status === '已拒绝';
+    const collectTag = a.collectTag || '无需追款';
+    const amountFrozen = frozen || collectTag === '已追清';
+    const type = a.aftersaleType || '其他';
+    const typeOptions = ['账号找回', '账号冻结或新设备', '其他'];
+    const typeOptionsHtml = typeOptions.map((x) =>
+      `<option value="${x}" ${x === type ? 'selected' : ''}>${x}</option>`).join('');
+    const accountInfo = order ? `${S.escapeHtml(a.orderId)} / ${S.escapeHtml(a.productName)}` : '—';
+    const income = S.getAftersaleIncomeTotal(state, a.id);
+    const gap = Math.max(0, (a.merchantPayable || 0) - income);
+    const collectProgressHtml = collectTag === '待追款'
+      ? `<div class="as-collect-progress">
+          <div><strong>追款进度</strong>：号商应付 ${S.fmtMoney(a.merchantPayable)}，
+          已登记收入 ${S.fmtMoney(income)}，缺口 ${S.fmtMoney(gap)}。</div>
+          <div class="hint">累计收入 ≥ 号商应付后，系统将自动标记「已追清」并从待售后扣除。</div>
+        </div>`
+      : collectTag === '已追清'
+        ? `<div class="as-collect-done">追款已清，登记收入 ${S.fmtMoney(income)} 已达标。</div>`
+        : '';
+
+    return `<div class="as-info-stack">
+        <div class="as-info-box">
+          <div class="as-info-title">商品信息</div>
+          <div class="as-info-grid">
+            <div class="detail-item"><label>订单</label><span>${S.escapeHtml(a.orderId)}</span></div>
+            <div class="detail-item"><label>商品</label><span>${S.escapeHtml(a.productName)}</span></div>
+            <div class="detail-item"><label>关联账号</label><span>${accountInfo}</span></div>
+            <div class="detail-item"><label>订单实付</label><span>${order ? S.fmtMoney(order.userPaid) : '—'}</span></div>
+          </div>
+        </div>
+        <div class="as-info-box">
+          <div class="as-info-title">售后信息</div>
+          <div class="as-info-grid">
+            <div class="detail-item"><label>售后单</label><span>${S.escapeHtml(a.id)}</span></div>
+            <div class="detail-item"><label>申请人</label><span>${S.escapeHtml(a.applicant)}</span></div>
+            <div class="detail-item"><label>处理人</label><span>${S.escapeHtml(a.handler || '—')}</span></div>
+            <div class="detail-item"><label>创建时间</label><span>${S.fmtDate(a.createdAt)}</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="as-divider"></div>
+      <div class="as-form-grid">
+        <div class="form-group">
+          <label class="form-label">售后类型</label>
+          <select class="form-select" id="as-type-${a.id}" ${frozen ? 'disabled' : ''}>${typeOptionsHtml}</select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">退款金额</label>
+          <input class="form-input" type="number" id="as-refund-${a.id}" value="${a.refundAmount}" ${amountFrozen ? 'disabled' : ''}>
+        </div>
+        <div class="form-group">
+          <label class="form-label">平台应付</label>
+          <input class="form-input" type="number" id="as-platform-${a.id}" value="${a.platformPayable}" ${amountFrozen ? 'disabled' : ''}>
+        </div>
+        <div class="form-group">
+          <label class="form-label">号商应付</label>
+          <input class="form-input" type="number" id="as-merchant-${a.id}" value="${a.merchantPayable}" ${amountFrozen ? 'disabled' : ''}>
+        </div>
+      </div>
+      <div class="as-amount-note">退款金额 = 号商应付 + 平台应付。号商应付 &gt; 0 时自动标记「待追款」并计入号商「待售后」。</div>
+      <div class="as-collect-section">
+        <label class="form-label">追款标签</label>
+        <div class="as-collect-tag-row">
+          <span class="badge ${S.collectTagBadgeClass(collectTag)}">${S.escapeHtml(collectTag)}</span>
+          <span class="as-collect-tag-hint">由系统根据号商应付与收支流水自动判定</span>
+        </div>
+        ${collectProgressHtml}
+      </div>
+      <div class="form-group">
+        <label class="form-label">处理备注</label>
+        <textarea class="form-textarea" id="as-plan-${a.id}" placeholder="填写处理说明、沟通记录等" ${frozen ? 'disabled' : ''}>${S.escapeHtml(a.note || '')}</textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">上传图片</label>
+        <span class="as-upload" title="演示占位">+</span>
+      </div>`;
+  }
+
+  function bindAftersaleModalEvents(id) {
+    bindModalClose();
+    const getAmounts = () => ({
+      refundAmount: document.getElementById(`as-refund-${id}`)?.value,
+      merchantPayable: document.getElementById(`as-merchant-${id}`)?.value,
+      platformPayable: document.getElementById(`as-platform-${id}`)?.value,
+    });
+
+    document.querySelector(`[data-confirm-as="${id}"]`)?.addEventListener('click', () => {
+      const type = document.getElementById(`as-type-${id}`)?.value || '其他';
+      const next = document.getElementById(`as-status-${id}`)?.value || '';
+      const note = document.getElementById(`as-plan-${id}`)?.value || '';
+      const amountRes = S.updateAftersaleAmounts(state, id, getAmounts());
+      if (!amountRes.ok) { toast(amountRes.msg); return; }
+      S.updateAftersaleMeta(state, id, { aftersaleType: type });
+      const a = (state.aftersales || []).find((x) => x.id === id);
+      if (a) a.note = note;
+      S.saveState(state);
+      const flowRes = applyAftersaleStatusTransition(id, next);
+      if (!flowRes.ok) { toast(flowRes.msg); return; }
+      closeOverlay();
+      toast('售后处理已更新');
+      render();
+    });
+  }
+
+  function getStatusOptions(current) {
+    if (current === '待处理') return ['待处理', '处理中', '已拒绝'];
+    if (current === '处理中') return ['处理中', '已完结', '已拒绝'];
+    return [current];
+  }
+
+  function applyAftersaleStatusTransition(id, nextStatus) {
+    const current = (state.aftersales || []).find((x) => x.id === id);
+    if (!current) return { ok: false, msg: '售后单不存在' };
+    if (current.status === nextStatus) return { ok: true };
+
+    if (current.status === '待处理' && nextStatus === '处理中') return S.acceptAftersale(state, id);
+    if (current.status === '待处理' && nextStatus === '已拒绝') return S.updateAftersaleMeta(state, id, { status: '已拒绝' });
+    if (current.status === '处理中' && nextStatus === '已完结') return S.completeAftersale(state, id);
+    if (current.status === '处理中' && nextStatus === '已拒绝') return S.rejectAftersale(state, id);
+    return { ok: false, msg: '当前状态不支持该流转' };
+  }
+
+  function showProcessAftersaleModal(id) {
+    state = S.loadState();
+    const a = (state.aftersales || []).find((x) => x.id === id);
+    if (!a) { toast('售后单不存在'); return; }
+
+    openModal(`<div class="modal modal-lg">
+      <div class="modal-header">
+        <div class="as-modal-head"><strong>处理售后 · ${S.escapeHtml(a.id)}</strong>
+          <span class="badge ${S.statusBadgeClass(a.status)}" style="margin-left:8px">${S.escapeHtml(a.status)}</span>
+          <span class="badge ${S.collectTagBadgeClass(a.collectTag || '无需追款')}" style="margin-left:4px">${S.escapeHtml(a.collectTag || '无需追款')}</span></div>
+        <button class="btn-ghost" data-modal-close><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">${buildAftersaleProcessBody(a)}</div>
+      <div class="modal-footer">
+        <div style="margin-right:auto;display:flex;align-items:center;gap:8px">
+          <label class="form-label" style="margin:0">售后状态</label>
+          <select class="form-select" id="as-status-${a.id}" ${a.status === '已完结' || a.status === '已拒绝' ? 'disabled' : ''} style="width:140px">${getStatusOptions(a.status).map((s) => `<option value="${s}" ${s === a.status ? 'selected' : ''}>${s}</option>`).join('')}</select>
+        </div>
+        <button class="btn btn-primary" data-confirm-as="${a.id}" ${a.status === '已完结' || a.status === '已拒绝' ? 'disabled' : ''}>确认</button>
+        <button class="btn btn-secondary" data-modal-close>关闭</button>
+      </div>
+    </div>`);
+    bindAftersaleModalEvents(id);
+  }
+
+  function renderAftersales() {
+    const pendingCollect = S.getPendingCollectAftersales(state).length;
+    const tabs = ['', '待处理', '处理中', '已拒绝', '已完结', '待追款'];
+    const tabHtml = tabs.map((t) => {
+      let label = t || '全部';
+      if (t === '待追款' && pendingCollect) label = `待追款 (${pendingCollect})`;
+      const active = ui.aftersaleTab === t ? 'active' : '';
+      return `<div class="tab-item ${active}" data-as-tab="${t}">${label}</div>`;
+    }).join('');
+
+    let list = state.aftersales || [];
+    if (ui.aftersaleTab === '待追款') {
+      list = list.filter((a) => a.collectTag === '待追款');
+    } else if (ui.aftersaleTab) {
+      list = list.filter((a) => a.status === ui.aftersaleTab);
+    }
+
+    const rows = list.map((a) => {
+      const tag = a.collectTag || '无需追款';
+      return `<tr class="action-row no-click">
+        <td>${S.escapeHtml(a.id)}</td>
+        <td>${S.escapeHtml(a.orderId)}</td>
+        <td>${S.escapeHtml(a.productName)}</td>
+        <td><span class="badge ${S.statusBadgeClass(a.status)}">${S.escapeHtml(a.status)}</span></td>
+        <td><span class="badge ${S.collectTagBadgeClass(tag)}">${S.escapeHtml(tag)}</span></td>
+        <td>${S.fmtMoney(a.refundAmount)}</td>
+        <td>${S.fmtMoney(a.merchantPayable)}</td>
+        <td>${S.fmtMoney(a.platformPayable)}</td>
+        <td>${S.fmtDateShort(a.createdAt)}</td>
+        <td>
+          <div class="action-btns">
+            <button class="btn btn-primary btn-sm" data-process-as="${a.id}">处理售后</button>
+            <button class="btn btn-secondary btn-sm" data-register-as-cf="${a.id}">登记收支</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+
+    return `<div class="page-toolbar"><h2 class="page-title">售后处理</h2></div>
+      <div class="list-wrap">
+        <div class="tab-bar">${tabHtml}</div>
+        <div class="list-panel" style="border:none">
+          <table class="data-table">
+            <thead><tr><th>售后单号</th><th>订单号</th><th>商品</th><th>状态</th><th>追款标签</th><th>退款金额</th><th>号商应付</th><th>平台应付</th><th>创建时间</th><th>操作</th></tr></thead>
+            <tbody>${rows || '<tr class="no-click"><td colspan="10" class="empty-state">暂无数据</td></tr>'}</tbody>
+          </table>
+        </div>
+      </div>`;
+  }
+
+  function renderWithdrawAudit() {
+    const pending = (state.withdrawals || []).filter((w) => w.status === '待审核');
+    const history = (state.withdrawals || []).filter((w) => w.status !== '待审核');
+    const isPending = ui.withdrawTab === 'pending';
+
+    const pendingRows = pending.map((w) =>
+      `<tr class="action-row no-click">
+        <td>${S.escapeHtml(w.id)}</td>
+        <td>${S.escapeHtml(w.merchantName)}</td>
+        <td>${S.fmtMoney(w.amount)}</td>
+        <td>${S.escapeHtml(w.settlementId)}</td>
+        <td>${w.openAftersaleCount} 笔</td>
+        <td>${S.fmtDate(w.applyTime)}</td>
+        <td><button class="btn btn-primary btn-sm" data-audit-withdraw-btn="${w.id}">审批</button></td>
+      </tr>`).join('');
+
+    const historyRows = history.map((w) =>
+      `<tr data-view-wd-history="${w.id}">
+        <td>${S.escapeHtml(w.id)}</td>
+        <td>${S.escapeHtml(w.merchantName)}</td>
+        <td>${S.fmtMoney(w.amount)}</td>
+        <td><span class="badge ${S.statusBadgeClass(w.status)}">${S.escapeHtml(w.status)}</span></td>
+        <td>${S.escapeHtml(w.auditor || '—')}</td>
+        <td>${w.auditTime ? S.fmtDate(w.auditTime) : '—'}</td>
+      </tr>`).join('');
+
+    const tabPending = ui.withdrawTab === 'pending' ? 'active' : '';
+    const tabHistory = ui.withdrawTab === 'history' ? 'active' : '';
+    const panel = isPending
+      ? `<table class="data-table">
+          <thead><tr><th>提现单号</th><th>号商</th><th>申请金额</th><th>结算单号</th><th>未完结售后</th><th>申请时间</th><th>操作</th></tr></thead>
+          <tbody>${pendingRows || '<tr class="no-click"><td colspan="7" class="empty-state">暂无待审核提现</td></tr>'}</tbody>
+        </table>`
+      : `<table class="data-table">
+          <thead><tr><th>提现单号</th><th>号商</th><th>金额</th><th>状态</th><th>审批人</th><th>审批时间</th></tr></thead>
+          <tbody>${historyRows || '<tr class="no-click"><td colspan="6" class="empty-state">暂无审批记录</td></tr>'}</tbody>
+        </table>`;
+
+    return `<div class="page-toolbar"><h2 class="page-title">提现审批</h2></div>
+      <div class="list-wrap">
+        <div class="tab-bar">
+          <div class="tab-item ${tabPending}" data-wd-tab="pending">待审批（${pending.length}）</div>
+          <div class="tab-item ${tabHistory}" data-wd-tab="history">审批历史</div>
+        </div>
+        <div class="list-panel" style="border:none">${panel}</div>
+      </div>`;
+  }
+
+  function getWithdrawAuditResult(w) {
+    const map = {
+      '待打款': '审批通过，结算单已进入待打款，等待财务处理',
+      '已完结': '审批通过，财务已登记打款，提现流程已完结',
+      '已驳回': '审批驳回，申请金额已退回号商可提现余额',
+      '已撤销': '号商已撤销提现申请',
+    };
+    return map[w.status] || w.status;
+  }
+
+  function getWithdrawAuditOpinion(w) {
+    if (w.status === '已驳回') return w.rejectReason || '—';
+    return w.note || '—';
+  }
+
+  function showWithdrawHistoryModal(wId) {
+    state = S.loadState();
+    const w = (state.withdrawals || []).find((x) => x.id === wId);
+    if (!w) { toast('提现单不存在'); return; }
+    const s = S.getSettlementByWithdrawal(state, wId);
+    const opinion = getWithdrawAuditOpinion(w);
+    const result = getWithdrawAuditResult(w);
+
+    openModal(`<div class="modal modal-lg">
+      <div class="modal-header">
+        <div class="as-modal-head">
+          <strong>提现单详情 · ${S.escapeHtml(w.id)}</strong>
+          <span class="badge ${S.statusBadgeClass(w.status)}">${S.escapeHtml(w.status)}</span>
+        </div>
+        <button class="btn-ghost" data-modal-close><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-grid">
+          <div class="detail-item"><label>号商</label><span>${S.escapeHtml(w.merchantName)}</span></div>
+          <div class="detail-item"><label>申请金额</label><span style="font-weight:600">${S.fmtMoney(w.amount)}</span></div>
+          <div class="detail-item"><label>结算单号</label><span>${S.escapeHtml(w.settlementId || '—')}</span></div>
+          <div class="detail-item"><label>申请时间</label><span>${S.fmtDate(w.applyTime)}</span></div>
+          <div class="detail-item"><label>审批人</label><span>${S.escapeHtml(w.auditor || '—')}</span></div>
+          <div class="detail-item"><label>审批时间</label><span>${w.auditTime ? S.fmtDate(w.auditTime) : '—'}</span></div>
+          ${w.payRegisterTime ? `<div class="detail-item"><label>打款时间</label><span>${S.fmtDate(w.payRegisterTime)}</span></div>` : ''}
+          ${s ? `<div class="detail-item"><label>结算金额</label><span>${S.fmtMoney(s.totalAmount)}</span></div>` : ''}
+        </div>
+        <div class="section-title">审批结果</div>
+        <div class="as-info-box" style="background:#fff;margin-bottom:12px">
+          <div class="as-info-line">${S.escapeHtml(result)}</div>
+        </div>
+        <div class="section-title">审批意见</div>
+        <div class="as-info-box" style="background:#fff;min-height:72px">
+          <div class="as-info-line" style="white-space:pre-wrap">${S.escapeHtml(opinion)}</div>
+        </div>
+      </div>
+      <div class="modal-footer modal-footer-between">
+        ${s ? `<button class="btn btn-secondary btn-sm" data-export-stl="${wId}"><i class="ri-download-line"></i> 导出结算单</button>` : '<span></span>'}
+        <button class="btn btn-secondary" data-modal-close>关闭</button>
+      </div>
+    </div>`);
+
+    bindModalClose();
+    document.querySelector(`[data-export-stl="${wId}"]`)?.addEventListener('click', () => exportSettlementSheet(wId));
+  }
+
+  function exportSettlementSheet(wId) {
+    state = S.loadState();
+    const w = (state.withdrawals || []).find((x) => x.id === wId);
+    const s = S.getSettlementByWithdrawal(state, wId);
+    if (!s) { toast('结算单不存在'); return; }
+
+    const summary = [
+      ['结算单号', s.id],
+      ['提现单号', wId],
+      ['号商', w.merchantName],
+      ['结算金额', s.totalAmount],
+      ['结算订单数', s.orderCount],
+      ['用户实付合计', s.userPaidTotal],
+      ['平台抽成利润', s.feeTotal],
+      ['包赔利润', s.compTotal],
+      ['收款账户', s.bankAccount?.account || ''],
+      ['开户行', s.bankAccount?.bank || ''],
+    ];
+    const lines = ['\uFEFF结算单汇总'];
+    summary.forEach(([k, v]) => lines.push(`${k},${v}`));
+    lines.push('', '订单明细', '序号,订单号,商品,用户实付,平台抽成,包赔,结算金额');
+    (s.orders || []).forEach((o) => {
+      lines.push([o.seq, o.orderId, o.productName, o.userPaid, o.platformFee, o.compensation, o.settleAmount].join(','));
+    });
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${s.id}.csv`;
+    a.click();
+    toast('结算单已导出');
+  }
+
+  function showAuditModal(wId) {
+    state = S.loadState();
+    const w = (state.withdrawals || []).find((x) => x.id === wId);
+    if (!w) { toast('提现单不存在'); return; }
+    const s = S.getSettlementByWithdrawal(state, wId);
+    const openAs = S.getOpenAftersales(state);
+
+    const riskHtml = openAs.length ? `<div class="risk-panel"><h4><i class="ri-alert-line"></i> 未完结售后单（${openAs.length} 笔，仅供参考，不自动抵扣）</h4><ul>
+      ${openAs.map((a) => `<li>${S.escapeHtml(a.id)} — ${S.escapeHtml(a.status)} / ${S.escapeHtml(a.collectTag || '无需追款')}，号商应付 ${S.fmtMoney(a.merchantPayable)}</li>`).join('')}
+    </ul></div>` : `<div class="alert alert-info">该号商当前无未完结售后单。</div>`;
+
+    const settlementSummary = s ? `<div class="section-title">结算单汇总 · ${S.escapeHtml(s.id)}</div>
+        <div class="stl-summary-card">
+          <div class="stl-summary-grid">
+            <div class="detail-item"><label>结算金额</label><span>${S.fmtMoney(s.totalAmount)}</span></div>
+            <div class="detail-item"><label>结算订单数</label><span>${s.orderCount} 笔</span></div>
+            <div class="detail-item"><label>用户实付合计</label><span>${S.fmtMoney(s.userPaidTotal)}</span></div>
+            <div class="detail-item"><label>平台抽成利润</label><span>${S.fmtMoney(s.feeTotal)}</span></div>
+            <div class="detail-item"><label>包赔利润</label><span>${S.fmtMoney(s.compTotal)}</span></div>
+          </div>
+        </div>` : '<div class="empty-state">未找到关联结算单</div>';
+
+    openModal(`<div class="modal modal-lg">
+      <div class="modal-header">
+        <strong>审批提现 · ${S.escapeHtml(wId)}</strong>
+        <button class="btn-ghost" data-modal-close><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="summary-bar">
+          <span>应结总额 <strong>${S.fmtMoney(s?.totalAmount)}</strong></span>
+          <span>订单 <strong>${s?.orderCount || 0}</strong> 笔</span>
+          <span>结算单 <strong>${S.escapeHtml(s?.id || '')}</strong></span>
+        </div>
+        <div class="detail-grid" style="margin-bottom:12px">
+          <div class="detail-item"><label>号商</label><span>${S.escapeHtml(w.merchantName)}</span></div>
+          <div class="detail-item"><label>申请时间</label><span>${S.fmtDate(w.applyTime)}</span></div>
+          <div class="detail-item"><label>收款账户</label><span>${S.escapeHtml(s?.bankAccount?.account || '—')}</span></div>
+          <div class="detail-item"><label>开户行</label><span>${S.escapeHtml(s?.bankAccount?.bank || '—')}</span></div>
+        </div>
+        ${riskHtml}
+        ${settlementSummary}
+        <div class="audit-opinion-wrap">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">审批意见<span class="required">*</span> <span style="font-weight:400;color:var(--gray-400)">（驳回时必填）</span></label>
+            <textarea class="form-textarea" id="wd-audit-opinion" placeholder="请填写审批意见，驳回时必须说明原因"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer modal-footer-between">
+        <button class="btn btn-secondary btn-sm" data-export-stl="${wId}"><i class="ri-download-line"></i> 导出结算单</button>
+        <div class="modal-footer-actions">
+          <button class="btn btn-danger" data-reject-wd="${wId}">驳回</button>
+          <button class="btn btn-primary" data-approve-wd="${wId}">审批通过</button>
+        </div>
+      </div>
+    </div>`);
+
+    bindModalClose();
+    document.querySelector(`[data-export-stl="${wId}"]`)?.addEventListener('click', () => exportSettlementSheet(wId));
+    document.querySelector(`[data-approve-wd="${wId}"]`)?.addEventListener('click', () => {
+      const opinion = document.getElementById('wd-audit-opinion')?.value || '';
+      const r = S.approveWithdrawal(state, wId, opinion);
+      if (r.ok) { closeOverlay(); toast('审批通过，结算单进入待打款'); render(); } else toast(r.msg);
+    });
+    document.querySelector(`[data-reject-wd="${wId}"]`)?.addEventListener('click', () => {
+      const reason = document.getElementById('wd-audit-opinion')?.value?.trim() || '';
+      if (!reason) { toast('驳回时请填写审批意见'); document.getElementById('wd-audit-opinion')?.focus(); return; }
+      const r = S.rejectWithdrawal(state, wId, reason);
+      if (r.ok) { closeOverlay(); toast('已驳回，金额退回可提现'); render(); } else toast(r.msg);
+    });
+  }
+
+  function getSettlementDisplayStatus(s) {
+    if (s.status === '已结算') return '已结算';
+    if (s.status === '已作废') return '已作废';
+    const w = (state.withdrawals || []).find((x) => x.id === s.withdrawalId);
+    if (s.status === '未结算' && w?.status === '待打款') return '待打款';
+    return '未结算';
+  }
+
+  function getSettlementDocTime(s) {
+    const w = (state.withdrawals || []).find((x) => x.id === s.withdrawalId);
+    const st = getSettlementDisplayStatus(s);
+    if (st === '已结算') return s.payment?.registerTime ? S.fmtDate(s.payment.registerTime) : (s.payment?.payDate ? S.fmtDateShort(s.payment.payDate) : '—');
+    if (st === '已作废') return w?.auditTime ? S.fmtDate(w.auditTime) : (s.createdAt ? S.fmtDate(s.createdAt) : '—');
+    return w?.auditTime ? S.fmtDate(w.auditTime) : '—';
+  }
+
+  function filterSettlementsByTab(list) {
+    if (ui.settlementTab === 'all') return list;
+    if (ui.settlementTab === 'pending') return list.filter((s) => getSettlementDisplayStatus(s) === '待打款');
+    if (ui.settlementTab === 'done') return list.filter((s) => getSettlementDisplayStatus(s) === '已结算');
+    if (ui.settlementTab === 'void') return list.filter((s) => getSettlementDisplayStatus(s) === '已作废');
+    return list;
+  }
+
+  function renderSettlements() {
+    const all = (state.settlements || []).slice();
+    const pendingCount = all.filter((s) => getSettlementDisplayStatus(s) === '待打款').length;
+    const doneCount = all.filter((s) => getSettlementDisplayStatus(s) === '已结算').length;
+    const voidCount = all.filter((s) => getSettlementDisplayStatus(s) === '已作废').length;
+    const list = filterSettlementsByTab(all);
+
+    const rows = list.map((s) => {
+      const st = getSettlementDisplayStatus(s);
+      const registerBtn = st === '待打款'
+        ? `<button class="btn btn-primary btn-sm" data-register-stl="${s.id}">登记打款</button>`
+        : '';
+      const action = `<div class="action-btns">
+          ${registerBtn}
+          <button class="btn btn-secondary btn-sm" data-export-stl-row="${s.id}"><i class="ri-download-line"></i> 导出结算单</button>
+        </div>`;
+      return `<tr class="action-row no-click">
+        <td>${S.escapeHtml(s.id)}</td>
+        <td>${S.escapeHtml(s.merchantName)}</td>
+        <td>${S.fmtMoney(s.totalAmount)}</td>
+        <td>${s.orderCount} 笔</td>
+        <td>${S.escapeHtml(s.bankAccount?.account || '—')}</td>
+        <td><span class="badge ${S.statusBadgeClass(st)}">${st}</span></td>
+        <td>${getSettlementDocTime(s)}</td>
+        <td>${action}</td>
+      </tr>`;
+    }).join('');
+
+    const tabAll = ui.settlementTab === 'all' ? 'active' : '';
+    const tabPending = ui.settlementTab === 'pending' ? 'active' : '';
+    const tabDone = ui.settlementTab === 'done' ? 'active' : '';
+    const tabVoid = ui.settlementTab === 'void' ? 'active' : '';
+
+    return `<div class="page-toolbar"><h2 class="page-title">结算处理</h2></div>
+      <div class="alert alert-info">财务按结算单打款即可，无需关注提现审批流程。线下打款后在系统登记，自动生成「卖家结算」支出流水。</div>
+      <div class="list-wrap">
+        <div class="tab-bar">
+          <div class="tab-item ${tabAll}" data-stl-tab="all">全部（${all.length}）</div>
+          <div class="tab-item ${tabPending}" data-stl-tab="pending">待打款（${pendingCount}）</div>
+          <div class="tab-item ${tabDone}" data-stl-tab="done">已结算（${doneCount}）</div>
+          <div class="tab-item ${tabVoid}" data-stl-tab="void">已作废（${voidCount}）</div>
+        </div>
+        <div class="list-panel" style="border:none">
+          <table class="data-table">
+            <thead><tr><th>结算单号</th><th>号商</th><th>结算金额</th><th>订单数</th><th>收款账户</th><th>状态</th><th>单据时间</th><th>操作</th></tr></thead>
+            <tbody>${rows || '<tr class="no-click"><td colspan="8" class="empty-state">暂无结算单</td></tr>'}</tbody>
+          </table>
+        </div>
+      </div>`;
+  }
+
+  function showSettlementPaymentModal(stlId) {
+    state = S.loadState();
+    const s = (state.settlements || []).find((x) => x.id === stlId);
+    if (!s) { toast('结算单不存在'); return; }
+    const today = new Date().toISOString().slice(0, 10);
+
+    openModal(`<div class="modal modal-lg">
+      <div class="modal-header">
+        <strong>登记打款 · ${S.escapeHtml(stlId)}</strong>
+        <button class="btn-ghost" data-modal-close><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-grid">
+          <div class="detail-item"><label>号商</label><span>${S.escapeHtml(s.merchantName)}</span></div>
+          <div class="detail-item"><label>应结金额</label><span style="font-weight:700">${S.fmtMoney(s.totalAmount)}</span></div>
+          <div class="detail-item"><label>收款账户</label><span>${S.escapeHtml(s.bankAccount?.account || '—')}</span></div>
+          <div class="detail-item"><label>开户行</label><span>${S.escapeHtml(s.bankAccount?.bank || '—')}</span></div>
+        </div>
+        <div class="section-title">结算单汇总</div>
+        <div class="stl-summary-card">
+          <div class="stl-summary-grid">
+            <div class="detail-item"><label>结算金额</label><span>${S.fmtMoney(s.totalAmount)}</span></div>
+            <div class="detail-item"><label>结算订单数</label><span>${s.orderCount} 笔</span></div>
+            <div class="detail-item"><label>用户实付合计</label><span>${S.fmtMoney(s.userPaidTotal)}</span></div>
+            <div class="detail-item"><label>平台抽成利润</label><span>${S.fmtMoney(s.feeTotal)}</span></div>
+            <div class="detail-item"><label>包赔利润</label><span>${S.fmtMoney(s.compTotal)}</span></div>
+          </div>
+        </div>
+        <div class="as-divider"></div>
+        <div class="form-group"><label class="form-label">打款日期</label><input class="form-input" type="date" id="pay-date" value="${today}"></div>
+        <div class="form-group"><label class="form-label">实付金额</label><input class="form-input" type="number" id="pay-amount" value="${s.totalAmount}"></div>
+        <div class="form-group"><label class="form-label">银行流水号</label><input class="form-input" id="pay-ref" placeholder="银行交易流水号"></div>
+        <div class="form-group">
+          <label class="form-label">打款凭证</label>
+          <div class="cf-voucher-grid" id="pay-voucher-grid" data-urls="[]"></div>
+          <input type="file" id="pay-voucher-input" accept="image/*" multiple hidden>
+          <p class="cf-voucher-hint">支持上传多张图片，单张不超过 5MB，最多 6 张</p>
+        </div>
+        <div class="form-group"><label class="form-label">备注</label><input class="form-input" id="pay-note" placeholder="选填"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-modal-close>取消</button>
+        <button class="btn btn-primary" data-confirm-stl="${stlId}">确认登记</button>
+      </div>
+      
+    </div>`);
+
+    bindModalClose();
+    bindVoucherUpload('pay-voucher-grid', 'pay-voucher-input', 6);
+    document.querySelector(`[data-confirm-stl="${stlId}"]`)?.addEventListener('click', () => {
+      const grid = document.getElementById('pay-voucher-grid');
+      const vouchers = JSON.parse(grid?.dataset.urls || '[]');
+      const payment = {
+        payDate: document.getElementById('pay-date').value,
+        actualAmount: Number(document.getElementById('pay-amount').value),
+        bankRef: document.getElementById('pay-ref').value,
+        note: document.getElementById('pay-note').value,
+        voucherCount: vouchers.length,
+      };
+      if (!payment.bankRef) { toast('请填写银行流水号'); return; }
+      const r = S.registerSettlementPayment(state, stlId, payment);
+      closeOverlay();
+      if (r.ok) {
+        toast(vouchers.length ? `结算打款登记完成（${vouchers.length} 张凭证）` : '结算打款登记完成');
+        render();
+      } else toast(r.msg);
+    });
+  }
+
+  function renderReconciliation() {
+    const filters = { bizType: ui.reconBiz, direction: ui.reconDir, dateFrom: ui.reconFrom, dateTo: ui.reconTo };
+    const list = S.filterCashflows(state, filters);
+    const income = list.filter((c) => c.direction === '收入').reduce((s, c) => s + c.amount, 0);
+    const expense = list.filter((c) => c.direction === '支出').reduce((s, c) => s + c.amount, 0);
+
+    const rows = list.map((c) =>
+      `<tr class="no-click">
+        <td>${S.escapeHtml(c.id)}</td>
+        <td>${S.fmtDate(c.time)}</td>
+        <td><span class="badge badge-gray">${S.escapeHtml(c.bizType)}</span></td>
+        <td>${S.escapeHtml(c.refNo)}</td>
+        <td><span class="badge ${c.direction === '收入' ? 'badge-green' : 'badge-red'}">${c.direction}</span></td>
+        <td>${S.fmtMoney(c.amount)}</td>
+        <td>${S.escapeHtml(c.channel)}</td>
+        <td>${S.escapeHtml(c.note || '')}</td>
+      </tr>`).join('');
+
+    return `<div class="page-toolbar">
+        <h2 class="page-title">财务对账</h2>
+        <button class="btn btn-secondary btn-sm" data-export-csv><i class="ri-download-line"></i> 导出 CSV</button>
+      </div>
+      <div class="recon-summary">
+        <div class="recon-card income"><div class="label">期间收入合计</div><div class="value">${S.fmtMoney(income)}</div></div>
+        <div class="recon-card expense"><div class="label">期间支出合计</div><div class="value">${S.fmtMoney(expense)}</div></div>
+        <div class="recon-card"><div class="label">净额</div><div class="value">${S.fmtMoney(income - expense)}</div></div>
+      </div>
+      <div class="filter-bar">
+        <input class="form-input" type="date" style="width:150px" data-recon-from value="${ui.reconFrom}">
+        <span>至</span>
+        <input class="form-input" type="date" style="width:150px" data-recon-to value="${ui.reconTo}">
+        <select class="form-select" style="width:140px" data-recon-biz>
+          <option value="">全部类型</option>
+          <option value="买家付款" ${ui.reconBiz === '买家付款' ? 'selected' : ''}>买家付款</option>
+          <option value="卖家结算" ${ui.reconBiz === '卖家结算' ? 'selected' : ''}>卖家结算</option>
+          <option value="售后处理" ${ui.reconBiz === '售后处理' ? 'selected' : ''}>售后处理</option>
+        </select>
+        <select class="form-select" style="width:120px" data-recon-dir>
+          <option value="">全部方向</option>
+          <option value="收入" ${ui.reconDir === '收入' ? 'selected' : ''}>收入</option>
+          <option value="支出" ${ui.reconDir === '支出' ? 'selected' : ''}>支出</option>
+        </select>
+        <button class="btn btn-primary btn-sm" data-recon-filter>筛选</button>
+      </div>
+      <div class="card-flat">
+        <table class="data-table">
+          <thead><tr><th>流水单号</th><th>时间</th><th>业务类型</th><th>关联单号</th><th>方向</th><th>金额</th><th>渠道</th><th>备注</th></tr></thead>
+          <tbody>${rows || '<tr class="no-click"><td colspan="8" class="empty-state">暂无流水</td></tr>'}</tbody>
+        </table>
+      </div>`;
+  }
+
+  function bindVoucherUpload(gridId, inputId, maxCount) {
+    const grid = document.getElementById(gridId);
+    const input = document.getElementById(inputId);
+    if (!grid || !input) return;
+
+    function renderVouchers(urls) {
+      const addBtn = urls.length < maxCount
+        ? `<button type="button" class="cf-voucher-add" data-cf-voucher-add title="上传凭证"><i class="ri-add-line"></i></button>`
+        : '';
+      const items = urls.map((url, i) =>
+        `<div class="cf-voucher-item">
+          <img src="${url}" alt="凭证${i + 1}">
+          <button type="button" class="cf-voucher-remove" data-cf-voucher-rm="${i}" title="删除">×</button>
+        </div>`).join('');
+      grid.innerHTML = items + addBtn;
+      grid.dataset.urls = JSON.stringify(urls);
+
+      grid.querySelector('[data-cf-voucher-add]')?.addEventListener('click', () => input.click());
+      grid.querySelectorAll('[data-cf-voucher-rm]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const list = JSON.parse(grid.dataset.urls || '[]');
+          list.splice(Number(btn.dataset.cfVoucherRm), 1);
+          renderVouchers(list);
+        });
+      });
+    }
+
+    input.addEventListener('change', () => {
+      const files = Array.from(input.files || []);
+      if (!files.length) return;
+      const list = JSON.parse(grid.dataset.urls || '[]');
+      const room = maxCount - list.length;
+      const picked = files.slice(0, room);
+      let done = 0;
+      picked.forEach((file) => {
+        if (!file.type.startsWith('image/')) { done++; return; }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          list.push(e.target.result);
+          done++;
+          if (done === picked.length) renderVouchers(list);
+        };
+        reader.readAsDataURL(file);
+      });
+      input.value = '';
+    });
+
+    renderVouchers([]);
+  }
+
+  function bindCfVoucherUpload(maxCount) {
+    bindVoucherUpload('cf-voucher-grid', 'cf-voucher-input', maxCount);
+  }
+
+  function updateCfAmountHint(a) {
+    const dir = document.getElementById('cf-dir')?.value || '收入';
+    const hint = document.getElementById('cf-amount-hint');
+    const amountInput = document.getElementById('cf-amount');
+    if (!hint || !amountInput) return;
+    const income = S.getAftersaleIncomeTotal(state, a.id);
+    const merchantRemain = Math.max(0, a.merchantPayable - income);
+    const platformRemain = Math.max(0, a.platformPayable || 0);
+    if (dir === '收入') {
+      hint.textContent = `待收实付额 ${S.fmtMoney(merchantRemain)}`;
+      if (!amountInput.dataset.touched) amountInput.value = merchantRemain || a.merchantPayable || 0;
+    } else {
+      hint.textContent = `待付实付额 ${S.fmtMoney(platformRemain || a.refundAmount)}`;
+      if (!amountInput.dataset.touched) amountInput.value = platformRemain || a.refundAmount || 0;
+    }
+  }
+
+  function showRegisterAsCashflow(id) {
+    state = S.loadState();
+    const a = (state.aftersales || []).find((x) => x.id === id);
+    if (!a) { toast('售后单不存在'); return; }
+    const income = S.getAftersaleIncomeTotal(state, a.id);
+    const merchantRemain = Math.max(0, a.merchantPayable - income);
+    const tagBadge = `<span class="badge ${S.collectTagBadgeClass(a.collectTag || '无需追款')}" style="margin-left:8px">${S.escapeHtml(a.collectTag || '无需追款')}</span>`;
+    openModal(`<div class="modal modal-lg">
+      <div class="modal-header">
+        <div><strong>登记收支 · ${S.escapeHtml(id)}</strong>${tagBadge}</div>
+        <button class="btn-ghost" data-modal-close><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">业务类型</label><input class="form-input" value="售后处理" disabled></div>
+        <div class="form-group"><label class="form-label">收支方向</label>
+          <select class="form-select" id="cf-dir">
+            <option value="收入" selected>收入</option>
+            <option value="支出">支出</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">金额</label>
+          <input class="form-input" type="number" id="cf-amount" value="${merchantRemain || a.merchantPayable}">
+          <p class="form-hint" id="cf-amount-hint">待收实付额 ${S.fmtMoney(merchantRemain)}</p>
+        </div>
+        <div class="form-group"><label class="form-label">支付渠道</label>
+          <select class="form-select" id="cf-channel">
+            <option>银行转账</option><option>微信</option><option>支付宝</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">凭证</label>
+          <div class="cf-voucher-grid" id="cf-voucher-grid" data-urls="[]"></div>
+          <input type="file" id="cf-voucher-input" accept="image/*" multiple hidden>
+          <p class="cf-voucher-hint">支持上传多张图片，单张不超过 5MB，最多 6 张</p>
+        </div>
+        <div class="form-group"><label class="form-label">备注</label><input class="form-input" id="cf-note" placeholder="如：号商售后追回"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-modal-close>取消</button>
+        <button class="btn btn-primary" data-confirm-cf="${id}">确认登记</button>
+      </div>
+    </div>`);
+    bindModalClose();
+    bindCfVoucherUpload(6);
+    const dirEl = document.getElementById('cf-dir');
+    const amountEl = document.getElementById('cf-amount');
+    dirEl?.addEventListener('change', () => updateCfAmountHint(a));
+    amountEl?.addEventListener('input', () => { amountEl.dataset.touched = '1'; });
+    document.querySelector(`[data-confirm-cf="${id}"]`).addEventListener('click', () => {
+      const grid = document.getElementById('cf-voucher-grid');
+      const vouchers = JSON.parse(grid?.dataset.urls || '[]');
+      const entry = {
+        direction: document.getElementById('cf-dir').value,
+        amount: Number(document.getElementById('cf-amount').value),
+        channel: document.getElementById('cf-channel').value,
+        note: document.getElementById('cf-note').value,
+        voucherCount: vouchers.length,
+      };
+      const r = S.registerAftersaleCashflow(state, id, entry);
+      closeOverlay();
+      if (r.ok) {
+        let msg = vouchers.length ? `收支已登记（${vouchers.length} 张凭证）` : '收支已登记';
+        if (r.cleared) msg = '收支已登记，追款标签已更新为「已追清」，待售后已扣减';
+        else if (r.remaining != null) msg += `，尚需追回 ${S.fmtMoney(r.remaining)}`;
+        toast(msg);
+        render();
+      } else toast(r.msg);
+    });
+  }
+
+  function renderShell(content) {
+    const pendingAudit = (state.withdrawals || []).filter((w) => w.status === '待审核').length;
+    const pendingSettlements = (state.settlements || []).filter((s) => {
+      if (s.status === '已结算' || s.status === '已作废') return false;
+      const w = (state.withdrawals || []).find((x) => x.id === s.withdrawalId);
+      return w && w.status === '待打款';
+    }).length;
+    const collecting = S.getPendingCollectAftersales(state).length;
+
+    document.getElementById('app-root').innerHTML = `
+      <div class="app-shell">
+        <aside class="app-sidebar">
+          <div class="app-logo platform"><i class="ri-government-line"></i> 平台后台</div>
+          <nav class="app-nav">
+            <div class="app-nav-group">运营</div>
+            <div class="app-nav-item ${route.page === 'aftersales' ? 'active' : ''}" data-nav="aftersales">
+              <i class="ri-customer-service-2-line"></i> 售后处理
+              ${collecting ? `<span class="nav-badge">${collecting}</span>` : ''}
+            </div>
+            <div class="app-nav-item ${route.page === 'withdraw-audit' ? 'active' : ''}" data-nav="withdraw-audit">
+              <i class="ri-checkbox-circle-line"></i> 提现审批
+              ${pendingAudit ? `<span class="nav-badge">${pendingAudit}</span>` : ''}
+            </div>
+            <div class="app-nav-group">财务</div>
+            <div class="app-nav-item ${route.page === 'settlements' ? 'active' : ''}" data-nav="settlements">
+              <i class="ri-bank-card-line"></i> 结算处理
+              ${pendingSettlements ? `<span class="nav-badge">${pendingSettlements}</span>` : ''}
+            </div>
+            <div class="app-nav-item ${route.page === 'reconciliation' ? 'active' : ''}" data-nav="reconciliation">
+              <i class="ri-file-chart-line"></i> 财务对账
+            </div>
+          </nav>
+          <div class="app-sidebar-foot">
+            <a href="bm-seller.html" target="_blank"><i class="ri-external-link-line"></i> 打开号商端</a>
+          </div>
+        </aside>
+        <main class="app-main">
+          <header class="app-header">
+            <span class="app-header-title">斑马优号 · 账务管理</span>
+            <div class="app-header-actions">
+              <span style="font-size:12px;color:var(--gray-400)">演示号商：${S.escapeHtml(state.merchant.name)}</span>
+              <button class="btn btn-secondary btn-sm" data-reset-demo><i class="ri-refresh-line"></i> 恢复演示数据</button>
+            </div>
+          </header>
+          <div class="app-content">${content}</div>
+        </main>
+      </div>`;
+  }
+
+  function render() {
+    state = S.loadState();
+    let content = '';
+    if (route.page === 'aftersales') content = renderAftersales();
+    else if (route.page === 'withdraw-audit') content = renderWithdrawAudit();
+    else if (route.page === 'settlements' || route.page === 'payments') content = renderSettlements();
+    else if (route.page === 'reconciliation') content = renderReconciliation();
+    else content = renderAftersales();
+    renderShell(content);
+    bindEvents();
+  }
+
+  function bindEvents() {
+    document.querySelectorAll('[data-nav]').forEach((el) => {
+      el.addEventListener('click', () => navigate(el.dataset.nav));
+    });
+    document.querySelectorAll('[data-as-tab]').forEach((el) => {
+      el.addEventListener('click', () => { ui.aftersaleTab = el.dataset.asTab; render(); });
+    });
+    document.querySelectorAll('[data-wd-tab]').forEach((el) => {
+      el.addEventListener('click', () => { ui.withdrawTab = el.dataset.wdTab; render(); });
+    });
+    document.querySelectorAll('[data-stl-tab]').forEach((el) => {
+      el.addEventListener('click', () => { ui.settlementTab = el.dataset.stlTab; render(); });
+    });
+    document.querySelectorAll('[data-process-as]').forEach((el) => {
+      el.addEventListener('click', (e) => { e.stopPropagation(); showProcessAftersaleModal(el.dataset.processAs); });
+    });
+    document.querySelectorAll('[data-register-as-cf]').forEach((el) => {
+      el.addEventListener('click', (e) => { e.stopPropagation(); showRegisterAsCashflow(el.dataset.registerAsCf); });
+    });
+    document.querySelectorAll('[data-audit-withdraw-btn]').forEach((el) => {
+      el.addEventListener('click', (e) => { e.stopPropagation(); showAuditModal(el.dataset.auditWithdrawBtn); });
+    });
+    document.querySelectorAll('[data-view-wd-history]').forEach((el) => {
+      el.addEventListener('click', () => showWithdrawHistoryModal(el.dataset.viewWdHistory));
+    });
+    document.querySelectorAll('[data-register-stl]').forEach((el) => {
+      el.addEventListener('click', (e) => { e.stopPropagation(); showSettlementPaymentModal(el.dataset.registerStl); });
+    });
+    document.querySelectorAll('[data-export-stl-row]').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const stl = (state.settlements || []).find((x) => x.id === el.dataset.exportStlRow);
+        if (stl?.withdrawalId) exportSettlementSheet(stl.withdrawalId);
+        else toast('无法导出结算单');
+      });
+    });
+    const filterBtn = document.querySelector('[data-recon-filter]');
+    if (filterBtn) filterBtn.addEventListener('click', () => {
+      ui.reconFrom = document.querySelector('[data-recon-from]')?.value || '';
+      ui.reconTo = document.querySelector('[data-recon-to]')?.value || '';
+      ui.reconBiz = document.querySelector('[data-recon-biz]')?.value || '';
+      ui.reconDir = document.querySelector('[data-recon-dir]')?.value || '';
+      render();
+    });
+    const exportBtn = document.querySelector('[data-export-csv]');
+    if (exportBtn) exportBtn.addEventListener('click', () => {
+      const csv = S.exportCashflowsCsv(state, { bizType: ui.reconBiz, direction: ui.reconDir, dateFrom: ui.reconFrom, dateTo: ui.reconTo });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = '收支流水单.csv';
+      a.click();
+      toast('CSV 已导出');
+    });
+    const resetBtn = document.querySelector('[data-reset-demo]');
+    if (resetBtn) resetBtn.addEventListener('click', () => {
+      state = S.resetDemo();
+      toast('已恢复演示数据');
+      render();
+    });
+  }
+
+  window.PlatformApp = {
+    closeModal(e) { if (!e || e.target.classList.contains('modal-overlay')) closeOverlay(); },
+    navigate,
+    render,
+  };
+
+  window.addEventListener('hashchange', () => { parseRoute(); render(); });
+  parseRoute();
+  render();
+})();
+
+  </script>
+</body>
+</html>
