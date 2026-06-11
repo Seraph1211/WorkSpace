@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>斑马优号 · 号商账务后台</title>
+  <title>斑马优号 · 店铺账务后台</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
   <style>
 :root {
@@ -246,434 +246,257 @@ html, body { width: 100%; }
   <div id="overlay"></div>
   <script>
 /**
- * 号商账务原型 — 演示数据
+ * 斑马优号 · 店铺结算原型 — 共享演示数据与业务逻辑 (V5)
  */
 window.BM_DEMO = {
-  version: 1,
+  version: 2,
   merchant: {
-    id: 'MCH-001',
-    name: '星辰号商行',
-    type: '号商',
+    id: 'SHOP-001',
+    name: '星辰优号店',
+    type: '店铺',
     bankAccount: {
-      name: '星辰号商行',
+      name: '星辰优号店',
       account: '6222 **** **** 8891',
       bank: '招商银行深圳科技园支行',
+      purpose: '提现款',
     },
   },
   account: {
     pendingCredit: 3200,
     withdrawable: 18600,
     withdrawing: 0,
-    settled: 52000,
-    pendingAftersale: 2700,
+    withdrawn: 54420,
+    pendingOffset: 780,
   },
   orders: [
-    {
-      id: 'ORD-20260501-001',
-      productName: '王者荣耀 V10 全皮肤',
-      status: '交易完成',
-      accountStatus: '可提现',
-      userPaid: 12800,
-      platformFee: 1280,
-      compensation: 500,
-      settleAmount: 11023,
-      completedAt: '2026-05-20T14:30:00',
-      withdrawStatus: '可提现',
-    },
-    {
-      id: 'ORD-20260508-002',
-      productName: '原神 55级 满命雷神',
-      status: '交易完成',
-      accountStatus: '可提现',
-      userPaid: 4500,
-      platformFee: 450,
-      compensation: 200,
-      settleAmount: 3850,
-      completedAt: '2026-05-22T10:15:00',
-      withdrawStatus: '可提现',
-    },
-    {
-      id: 'ORD-20260515-003',
-      productName: '和平精英 战神号',
-      status: '交易完成',
-      accountStatus: '可提现',
-      userPaid: 4200,
-      platformFee: 420,
-      compensation: 150,
-      settleAmount: 3630,
-      completedAt: '2026-05-25T16:45:00',
-      withdrawStatus: '可提现',
-    },
-    {
-      id: 'ORD-20260528-004',
-      productName: '英雄联盟 钻石段位',
-      status: '交易中',
-      accountStatus: '待入账',
-      userPaid: 3200,
-      platformFee: 320,
-      compensation: 100,
-      settleAmount: 2780,
-      completedAt: null,
-      withdrawStatus: '待入账',
-    },
-    {
-      id: 'ORD-20260410-005',
-      productName: 'DNF 满级搬砖号',
-      status: '交易完成',
-      accountStatus: '已结算',
-      userPaid: 2800,
-      platformFee: 280,
-      compensation: 100,
-      settleAmount: 2420,
-      completedAt: '2026-04-15T09:00:00',
-      withdrawStatus: '已提现',
-    },
-    {
-      id: 'ORD-20260320-006',
-      productName: '火影忍者 S 忍号',
-      status: '交易完成',
-      accountStatus: '已结算',
-      userPaid: 3600,
-      platformFee: 360,
-      compensation: 120,
-      settleAmount: 3120,
-      completedAt: '2026-03-22T11:00:00',
-      withdrawStatus: '已提现',
-    },
-    {
-      id: 'ORD-20260215-007',
-      productName: '崩坏：星穹铁道 满级号',
-      status: '交易完成',
-      accountStatus: '已结算',
-      userPaid: 2200,
-      platformFee: 220,
-      compensation: 80,
-      settleAmount: 1900,
-      completedAt: '2026-02-18T09:30:00',
-      withdrawStatus: '已提现',
-    },
+    { id: 'ORD-20260501-001', shopName: '星辰优号店', productName: '王者荣耀 V10 全皮肤', status: '交易完成', accountStatus: '可提现', userPaid: 12800, shopSettle: 11020, platformFee: 1280, paymentFee: 77, compensation: 500, settleAmount: 11020, completedAt: '2026-05-20T14:30:00' },
+    { id: 'ORD-20260508-002', shopName: '星辰优号店', productName: '原神 55级 满命雷神', status: '交易完成', accountStatus: '可提现', userPaid: 4500, shopSettle: 3850, platformFee: 450, paymentFee: 27, compensation: 200, settleAmount: 3850, completedAt: '2026-05-22T10:15:00' },
+    { id: 'ORD-20260515-003', shopName: '星辰优号店', productName: '和平精英 战神号', status: '交易完成', accountStatus: '可提现', userPaid: 4200, shopSettle: 3630, platformFee: 420, paymentFee: 25, compensation: 150, settleAmount: 3630, completedAt: '2026-05-25T16:45:00' },
+    { id: 'ORD-20260528-004', shopName: '星辰优号店', productName: '英雄联盟 钻石段位', status: '交易中', accountStatus: '待入账', userPaid: 3200, shopSettle: 2780, platformFee: 320, paymentFee: 19, compensation: 100, settleAmount: 2780, completedAt: null },
+    { id: 'ORD-20260410-005', shopName: '星辰优号店', productName: 'DNF 满级搬砖号', status: '交易完成', accountStatus: '已提现', userPaid: 2800, shopSettle: 2420, platformFee: 280, paymentFee: 17, compensation: 100, settleAmount: 2420, completedAt: '2026-04-15T09:00:00' },
+    { id: 'ORD-20260320-006', shopName: '星辰优号店', productName: '火影忍者 S 忍号', status: '交易完成', accountStatus: '已提现', userPaid: 3600, shopSettle: 3120, platformFee: 360, paymentFee: 22, compensation: 120, settleAmount: 3120, completedAt: '2026-03-22T11:00:00' },
+    { id: 'ORD-20260215-007', shopName: '星辰优号店', productName: '崩坏：星穹铁道 满级号', status: '交易完成', accountStatus: '已提现', userPaid: 2200, shopSettle: 1900, platformFee: 220, paymentFee: 13, compensation: 80, settleAmount: 1900, completedAt: '2026-02-18T09:30:00' },
   ],
   withdrawals: [
     {
-      id: 'WD-20260425-001',
-      merchantId: 'MCH-001',
-      merchantName: '星辰号商行',
-      merchantType: '号商',
-      applyTime: '2026-04-25T10:00:00',
-      amount: 2420,
-      status: '已完结',
-      settlementId: 'STL-20260425-001',
-      openAftersaleCount: 0,
-      auditor: '运营审核员',
-      auditTime: '2026-04-25T14:00:00',
-      rejectReason: '',
-      payRegisterTime: '2026-04-25T16:30:00',
-      note: '',
+      id: 'WD-20260602-001', shopId: 'SHOP-001', shopName: '星辰优号店', shopType: '店铺',
+      applyTime: '2026-06-02T09:30:00', amount: 18600, status: '待审核', settlementId: 'STL-20260602-001',
+      pendingOffsetAmount: 780, relatedAftersales: ['AS-20260518-003', 'AS-20260525-005'],
+      auditor: '', auditTime: '', rejectReason: '', payRegisterTime: '', note: '',
     },
     {
-      id: 'WD-20260328-001',
-      merchantId: 'MCH-001',
-      merchantName: '星辰号商行',
-      merchantType: '号商',
-      applyTime: '2026-03-28T09:20:00',
-      amount: 5020,
-      status: '已完结',
-      settlementId: 'STL-20260328-001',
-      openAftersaleCount: 0,
-      auditor: '运营审核员',
-      auditTime: '2026-03-28T11:00:00',
-      rejectReason: '',
-      payRegisterTime: '2026-03-28T15:00:00',
-      note: '',
+      id: 'WD-20260520-001', shopId: 'SHOP-001', shopName: '星辰优号店', shopType: '店铺',
+      applyTime: '2026-05-20T11:00:00', amount: 11023, status: '待打款', settlementId: 'STL-20260520-001',
+      pendingOffsetAmount: 0, relatedAftersales: [],
+      auditor: '运营审核员', auditTime: '2026-05-21T10:00:00', rejectReason: '', payRegisterTime: '', note: '订单均已交易完成，同意进入待打款。',
     },
     {
-      id: 'WD-20260512-001',
-      merchantId: 'MCH-001',
-      merchantName: '星辰号商行',
-      merchantType: '号商',
-      applyTime: '2026-05-12T16:00:00',
-      amount: 8500,
-      status: '已驳回',
-      settlementId: 'STL-20260512-001',
-      openAftersaleCount: 2,
-      auditor: '运营审核员',
-      auditTime: '2026-05-13T10:00:00',
-      rejectReason: '存在未完结售后单，请处理后再申请',
-      payRegisterTime: '',
-      note: '',
+      id: 'WD-20260425-001', shopId: 'SHOP-001', shopName: '星辰优号店', shopType: '店铺',
+      applyTime: '2026-04-25T10:00:00', amount: 2420, status: '已完结', settlementId: 'STL-20260425-001',
+      pendingOffsetAmount: 0, relatedAftersales: [],
+      auditor: '运营审核员', auditTime: '2026-04-25T14:00:00', rejectReason: '', payRegisterTime: '2026-04-25T16:30:00', note: '',
+    },
+    {
+      id: 'WD-20260512-001', shopId: 'SHOP-001', shopName: '星辰优号店', shopType: '店铺',
+      applyTime: '2026-05-12T16:00:00', amount: 8500, status: '已驳回', settlementId: 'STL-20260512-001',
+      pendingOffsetAmount: 780, relatedAftersales: ['AS-20260518-003', 'AS-20260525-005'],
+      auditor: '运营审核员', auditTime: '2026-05-13T10:00:00', rejectReason: '可提现金额不足以抵扣待冲抵', payRegisterTime: '', note: '',
     },
   ],
-  settlements: [],
+  settlements: [
+    {
+      id: 'STL-20260602-001', settleType: '提现结算', bizRefId: 'WD-20260602-001',
+      shopId: 'SHOP-001', shopName: '星辰优号店', shopType: '店铺',
+      payeeName: '星辰优号店', payeeAccount: '6222 **** **** 8891', payeeBank: '招商银行深圳科技园支行', payeePurpose: '提现款',
+      createdAt: '2026-06-02T09:30:00', totalAmount: 18600, orderCount: 3,
+      userPaidTotal: 21500, feeTotal: 2150, compTotal: 850, status: '待打款',
+      orders: [
+        { seq: 1, orderId: 'ORD-20260501-001', productName: '王者荣耀 V10 全皮肤', shopName: '星辰优号店', userPaid: 12800, platformFee: 1280, paymentFee: 77, compensation: 500, settleAmount: 11020 },
+        { seq: 2, orderId: 'ORD-20260508-002', productName: '原神 55级 满命雷神', shopName: '星辰优号店', userPaid: 4500, platformFee: 450, paymentFee: 27, compensation: 200, settleAmount: 3850 },
+        { seq: 3, orderId: 'ORD-20260515-003', productName: '和平精英 战神号', shopName: '星辰优号店', userPaid: 4200, platformFee: 420, paymentFee: 25, compensation: 150, settleAmount: 3630 },
+      ],
+      aftersaleItems: [], payment: null,
+    },
+    {
+      id: 'STL-20260520-001', settleType: '提现结算', bizRefId: 'WD-20260520-001',
+      shopId: 'SHOP-001', shopName: '星辰优号店', shopType: '店铺',
+      payeeName: '星辰优号店', payeeAccount: '6222 **** **** 8891', payeeBank: '招商银行深圳科技园支行', payeePurpose: '提现款',
+      createdAt: '2026-05-20T11:00:00', totalAmount: 11023, orderCount: 1,
+      userPaidTotal: 12800, feeTotal: 1280, compTotal: 500, status: '待打款',
+      orders: [{ seq: 1, orderId: 'ORD-20260501-001', productName: '王者荣耀 V10 全皮肤', shopName: '星辰优号店', userPaid: 12800, platformFee: 1280, paymentFee: 77, compensation: 500, settleAmount: 11023 }],
+      aftersaleItems: [], payment: null,
+    },
+    {
+      id: 'STL-20260425-001', settleType: '提现结算', bizRefId: 'WD-20260425-001',
+      shopId: 'SHOP-001', shopName: '星辰优号店', shopType: '店铺',
+      payeeName: '星辰优号店', payeeAccount: '6222 **** **** 8891', payeeBank: '招商银行深圳科技园支行', payeePurpose: '提现款',
+      createdAt: '2026-04-25T10:00:00', totalAmount: 2420, orderCount: 1,
+      userPaidTotal: 2800, feeTotal: 280, compTotal: 100, status: '已打款',
+      orders: [{ seq: 1, orderId: 'ORD-20260410-005', productName: 'DNF 满级搬砖号', shopName: '星辰优号店', userPaid: 2800, platformFee: 280, paymentFee: 17, compensation: 100, settleAmount: 2420 }],
+      aftersaleItems: [],
+      payment: { registerTime: '2026-04-25T16:30:00', note: '招商银行对公转账', vouchers: [] },
+    },
+    {
+      id: 'STL-20260512-001', settleType: '提现结算', bizRefId: 'WD-20260512-001',
+      shopId: 'SHOP-001', shopName: '星辰优号店', shopType: '店铺',
+      payeeName: '星辰优号店', payeeAccount: '6222 **** **** 8891', payeeBank: '招商银行深圳科技园支行', payeePurpose: '提现款',
+      createdAt: '2026-05-12T16:00:00', totalAmount: 8500, orderCount: 2,
+      userPaidTotal: 9800, feeTotal: 980, compTotal: 320, status: '已作废',
+      orders: [], aftersaleItems: [], payment: null,
+    },
+    {
+      id: 'STL-20260518-002', settleType: '售后退款', bizRefId: 'AS-20260518-003',
+      shopId: 'SHOP-001', shopName: '星辰优号店', shopType: '店铺',
+      payeeName: '买家用户C', payeeAccount: '6228 **** **** 1234', payeeBank: '工商银行', payeePurpose: '售后退款',
+      createdAt: '2026-05-19T11:00:00', totalAmount: 800, orderCount: 0,
+      userPaidTotal: 0, feeTotal: 0, compTotal: 0, status: '待打款',
+      orders: [],
+      aftersaleItems: [{ aftersaleId: 'AS-20260518-003', productName: '原神 55级 满命雷神', shopName: '星辰优号店', refundAmount: 800, platformPayable: 300, shopPayable: 500, paymentFee: 0 }],
+      payment: null,
+    },
+  ],
   aftersales: [
     {
-      id: 'AS-20260510-001',
-      orderId: 'ORD-20260410-005',
-      productName: 'DNF 满级搬砖号',
-      applicant: '买家用户A',
-      aftersaleType: '账号冻结或新设备',
-      status: '处理中',
-      collectTag: '待追款',
-      refundAmount: 1500,
-      merchantPayable: 1400,
-      platformPayable: 100,
-      merchantPaid: 0,
-      handler: '客服小李',
-      createdAt: '2026-05-10T09:00:00',
-      note: '账号与描述不符，号商有责',
+      id: 'AS-20260510-001', orderId: 'ORD-20260410-005', productName: 'DNF 满级搬砖号', applicant: '买家用户A',
+      orderPaid: 2800, orderPaidAt: '2026-04-15T11:00:00', aftersaleType: '账号冻结', liabilityParty: '店铺有责', needRefund: '是',
+      status: '处理中', refundAmount: 1500, platformPayable: 100, shopPayable: 1400,
+      payeeName: '', payeeAccount: '', payeeBank: '', payeePurpose: '',
+      handler: '客服小李', acceptedAt: '2026-05-10T10:00:00', createdAt: '2026-05-10T09:00:00', note: '账号与描述不符，店铺有责',
+      userReason: '账号被冻结无法登录', userEvidence: '截图 2 张',
     },
     {
-      id: 'AS-20260520-002',
-      orderId: 'ORD-20260501-001',
-      productName: '王者荣耀 V10 全皮肤',
-      applicant: '买家用户B',
-      aftersaleType: '账号找回',
-      status: '待处理',
-      collectTag: '无需追款',
-      refundAmount: 0,
-      merchantPayable: 0,
-      platformPayable: 0,
-      merchantPaid: 0,
-      handler: '',
-      createdAt: '2026-05-28T11:20:00',
-      note: '买家反馈皮肤数量不符',
+      id: 'AS-20260520-002', orderId: 'ORD-20260501-001', productName: '王者荣耀 V10 全皮肤', applicant: '买家用户B',
+      orderPaid: 12800, orderPaidAt: '2026-05-01T09:15:00', aftersaleType: '', liabilityParty: '', needRefund: '',
+      status: '待处理', refundAmount: 0, platformPayable: 0, shopPayable: 0,
+      payeeName: '', payeeAccount: '', payeeBank: '', payeePurpose: '',
+      handler: '', acceptedAt: '', createdAt: '2026-05-28T11:20:00', note: '',
+      userReason: '买家反馈皮肤数量不符', userEvidence: '截图 1 张',
     },
     {
-      id: 'AS-20260518-003',
-      orderId: 'ORD-20260508-002',
-      productName: '原神 55级 满命雷神',
-      applicant: '买家用户C',
-      aftersaleType: '其他',
-      status: '处理中',
-      collectTag: '待追款',
-      refundAmount: 800,
-      merchantPayable: 500,
-      platformPayable: 300,
-      merchantPaid: 200,
-      handler: '客服小王',
-      createdAt: '2026-05-18T15:30:00',
-      note: '正在与号商核实，号商已部分补缴 ¥200',
+      id: 'AS-20260518-003', orderId: 'ORD-20260508-002', productName: '原神 55级 满命雷神', applicant: '买家用户C',
+      orderPaid: 4500, orderPaidAt: '2026-05-08T14:20:00', aftersaleType: '账号找回', liabilityParty: '店铺有责', needRefund: '是',
+      status: '退款中', refundAmount: 800, platformPayable: 300, shopPayable: 500,
+      payeeName: '买家用户C', payeeAccount: '6228 **** **** 1234', payeeBank: '工商银行', payeePurpose: '售后退款',
+      handler: '客服小王', acceptedAt: '2026-05-18T16:00:00', createdAt: '2026-05-18T15:30:00', note: '平台垫付退款',
+      userReason: '账号被找回', userEvidence: '聊天记录',
+      settlementId: 'STL-20260518-002',
     },
     {
-      id: 'AS-20260505-004',
-      orderId: 'ORD-20260410-005',
-      productName: 'DNF 满级搬砖号',
-      applicant: '买家用户D',
-      aftersaleType: '账号冻结或新设备',
-      status: '已拒绝',
-      collectTag: '无需追款',
-      refundAmount: 0,
-      merchantPayable: 0,
-      platformPayable: 0,
-      merchantPaid: 0,
-      handler: '客服小张',
-      createdAt: '2026-05-05T10:00:00',
-      note: '买家恶意退款，证据不足',
+      id: 'AS-20260505-004', orderId: 'ORD-20260410-005', productName: 'DNF 满级搬砖号', applicant: '买家用户D',
+      orderPaid: 2800, orderPaidAt: '2026-04-15T11:00:00', aftersaleType: '其他', liabilityParty: '', needRefund: '否',
+      status: '已拒绝', refundAmount: 0, platformPayable: 0, shopPayable: 0,
+      payeeName: '', payeeAccount: '', payeeBank: '', payeePurpose: '',
+      handler: '客服小张', acceptedAt: '2026-05-05T11:00:00', createdAt: '2026-05-05T10:00:00', note: '买家恶意退款，证据不足',
+      userReason: '要求无理由退款', userEvidence: '',
     },
     {
-      id: 'AS-20260420-005',
-      orderId: 'ORD-20260410-005',
-      productName: 'DNF 满级搬砖号',
-      applicant: '买家用户E',
-      aftersaleType: '账号找回',
-      status: '已完结',
-      collectTag: '已追清',
-      refundAmount: 600,
-      merchantPayable: 500,
-      platformPayable: 100,
-      merchantPaid: 500,
-      handler: '客服小李',
-      createdAt: '2026-04-20T14:00:00',
-      note: '号商已转账，平台已退款给用户',
-    },
-    {
-      id: 'AS-20260501-006',
-      orderId: 'ORD-20260515-003',
-      productName: '和平精英 战神号',
-      applicant: '买家用户F',
-      aftersaleType: '账号找回',
-      status: '已完结',
-      collectTag: '待追款',
-      refundAmount: 1200,
-      merchantPayable: 800,
-      platformPayable: 400,
-      merchantPaid: 0,
-      handler: '客服小李',
-      createdAt: '2026-05-01T11:00:00',
-      note: '客诉已结案并退款，号商追款仍在进行中',
-    },
-  ],
-  cashflows: [
-    {
-      id: 'CF-20260415-001',
-      time: '2026-04-15T11:00:00',
-      bizType: '买家付款',
-      refNo: 'ORD-20260410-005',
-      direction: '收入',
-      amount: 2800,
-      payer: '买家用户E',
-      payee: '斑马优号平台',
-      channel: '支付宝',
-      note: '',
-    },
-    {
-      id: 'CF-20260425-001',
-      time: '2026-04-25T16:30:00',
-      bizType: '卖家结算',
-      refNo: 'STL-20260425-001',
-      direction: '支出',
-      amount: 2420,
-      payer: '斑马优号平台',
-      payee: '星辰号商行',
-      channel: '银行转账',
-      note: '首次结算打款',
-    },
-    {
-      id: 'CF-20260501-001',
-      time: '2026-05-01T09:15:00',
-      bizType: '买家付款',
-      refNo: 'ORD-20260501-001',
-      direction: '收入',
-      amount: 12800,
-      payer: '买家用户B',
-      payee: '斑马优号平台',
-      channel: '微信',
-      note: '',
-    },
-    {
-      id: 'CF-20260508-001',
-      time: '2026-05-08T14:20:00',
-      bizType: '买家付款',
-      refNo: 'ORD-20260508-002',
-      direction: '收入',
-      amount: 4500,
-      payer: '买家用户C',
-      payee: '斑马优号平台',
-      channel: '支付宝',
-      note: '',
-    },
-    {
-      id: 'CF-20260510-001',
-      time: '2026-05-10T15:00:00',
-      bizType: '售后处理',
-      refNo: 'AS-20260510-001',
-      direction: '支出',
-      amount: 1500,
-      payer: '斑马优号平台',
-      payee: '买家用户A',
-      channel: '银行转账',
-      note: '平台垫付退款',
-    },
-    {
-      id: 'CF-20260422-001',
-      time: '2026-04-22T10:00:00',
-      bizType: '售后处理',
-      refNo: 'AS-20260420-005',
-      direction: '收入',
-      amount: 500,
-      payer: '星辰号商行',
-      payee: '斑马优号平台',
-      channel: '银行转账',
-      note: '号商售后追回',
-    },
-    {
-      id: 'CF-20260519-001',
-      time: '2026-05-19T10:00:00',
-      bizType: '售后处理',
-      refNo: 'AS-20260518-003',
-      direction: '收入',
-      amount: 200,
-      payer: '星辰号商行',
-      payee: '斑马优号平台',
-      channel: '微信',
-      note: '号商部分补缴，仍待追款',
+      id: 'AS-20260420-005', orderId: 'ORD-20260410-005', productName: 'DNF 满级搬砖号', applicant: '买家用户E',
+      orderPaid: 2800, orderPaidAt: '2026-04-15T11:00:00', aftersaleType: '账号找回', liabilityParty: '店铺无责', needRefund: '是',
+      status: '已完结', refundAmount: 600, platformPayable: 600, shopPayable: 0,
+      payeeName: '买家用户E', payeeAccount: '支付宝', payeeBank: '支付宝', payeePurpose: '售后退款',
+      handler: '客服小李', acceptedAt: '2026-04-20T15:00:00', createdAt: '2026-04-20T14:00:00', note: '平台全额承担退款',
+      userReason: '账号异常', userEvidence: '截图',
+      settlementId: 'STL-20260420-001',
     },
   ],
   activityLog: [
     { time: '2026-05-25T16:45:00', type: '订单入账', desc: 'ORD-20260515-003 交易完成，¥3,630 转入可提现' },
-    { time: '2026-05-22T10:15:00', type: '订单入账', desc: 'ORD-20260508-002 交易完成，¥3,850 转入可提现' },
-    { time: '2026-05-20T14:30:00', type: '订单入账', desc: 'ORD-20260501-001 交易完成，¥11,020 转入可提现' },
-    { time: '2026-05-10T15:00:00', type: '售后垫付', desc: 'AS-20260510-001 平台垫付 ¥1,500，待追款' },
+    { time: '2026-05-19T11:00:00', type: '确认退款', desc: 'AS-20260518-003 创建结算单 STL-20260518-002，进入退款中' },
+    { time: '2026-05-10T15:00:00', type: '售后受理', desc: 'AS-20260510-001 客服受理，店铺有责待处理' },
   ],
-  nextIds: {
-    withdrawal: 1,
-    settlement: 1,
-    cashflow: 10,
-  },
+  offsetRecords: [
+    {
+      id: 'OFF-001', type: '产生', amount: 300, balanceAfter: 300,
+      refId: 'AS-20260315-001', refType: '售后单',
+      description: '店铺有责售后退款，店铺应付计入待冲抵',
+      createdAt: '2026-03-18T16:00:00',
+    },
+    {
+      id: 'OFF-002', type: '消除', amount: 300, balanceAfter: 0,
+      refId: 'WD-20260425-001', refType: '提现单',
+      description: '提现打款完成，待冲抵从提现金额中抵扣并归零',
+      createdAt: '2026-04-25T16:30:00',
+    },
+    {
+      id: 'OFF-003', type: '产生', amount: 500, balanceAfter: 500,
+      refId: 'AS-20260518-003', refType: '售后单',
+      description: '店铺有责售后退款，店铺应付 ¥500 计入待冲抵',
+      createdAt: '2026-05-19T11:00:00',
+    },
+  ],
+  aftersaleFunds: [
+    {
+      aftersaleId: 'AS-20260315-001', orderId: 'ORD-20260315-001', shopName: '星辰优号店',
+      refundAmount: 600, platformPayable: 300, shopPayable: 300,
+      offsetStatus: '已冲抵', clearedAt: '2026-04-25T16:30:00', clearedBy: '系统（提现冲抵）',
+      verifyNote: '', verifyVouchers: [], createdAt: '2026-03-18T16:00:00',
+    },
+    {
+      aftersaleId: 'AS-20260220-001', orderId: 'ORD-20260220-001', shopName: '星辰优号店',
+      refundAmount: 400, platformPayable: 200, shopPayable: 200,
+      offsetStatus: '已核销', clearedAt: '2026-03-01T10:00:00', clearedBy: '财务小李',
+      verifyNote: '店铺对公转账已核实', verifyVouchers: [], createdAt: '2026-02-22T14:00:00',
+    },
+    {
+      aftersaleId: 'AS-20260518-003', orderId: 'ORD-20260508-002', shopName: '星辰优号店',
+      refundAmount: 800, platformPayable: 300, shopPayable: 500,
+      offsetStatus: '待冲抵', clearedAt: '', clearedBy: '', verifyNote: '',
+      verifyVouchers: [], createdAt: '2026-05-19T11:00:00',
+    },
+    {
+      aftersaleId: 'AS-20260522-004', orderId: 'ORD-20260512-008', shopName: '云端号铺',
+      refundAmount: 1200, platformPayable: 850, shopPayable: 350,
+      offsetStatus: '待冲抵', clearedAt: '', clearedBy: '', verifyNote: '',
+      verifyVouchers: [], createdAt: '2026-05-22T15:30:00',
+    },
+    {
+      aftersaleId: 'AS-20260525-005', orderId: 'ORD-20260515-003', shopName: '星辰优号店',
+      refundAmount: 600, platformPayable: 320, shopPayable: 280,
+      offsetStatus: '待冲抵', clearedAt: '', clearedBy: '', verifyNote: '',
+      verifyVouchers: [], createdAt: '2026-05-25T17:00:00',
+    },
+    {
+      aftersaleId: 'AS-20260601-006', orderId: 'ORD-20260528-009', shopName: '极速交易店',
+      refundAmount: 980, platformPayable: 560, shopPayable: 420,
+      offsetStatus: '待冲抵', clearedAt: '', clearedBy: '', verifyNote: '',
+      verifyVouchers: [], createdAt: '2026-06-01T10:20:00',
+    },
+  ],
+  nextIds: { withdrawal: 3, settlement: 4, aftersale: 7, offset: 4 },
 };
 
-  </script>
-  <script>
-/**
- * 号商账务原型 — 共享业务逻辑
- */
 (function (global) {
-  const STORAGE_KEY = 'bm_seller_prototype_v1';
+  const STORAGE_KEY = 'bm_shop_prototype_v2';
 
   const WITHDRAWAL_STATUS = {
-    PENDING_AUDIT: '待审核',
-    PENDING_PAY: '待打款',
-    REJECTED: '已驳回',
-    CANCELLED: '已撤销',
-    COMPLETED: '已完结',
+    PENDING_AUDIT: '待审核', PENDING_PAY: '待打款', REJECTED: '已驳回', COMPLETED: '已完结',
   };
-
-  const SETTLEMENT_STATUS = {
-    UNSETTLED: '未结算',
-    VOID: '已作废',
-    SETTLED: '已结算',
-  };
-
+  const SETTLEMENT_STATUS = { PENDING_PAY: '待打款', PAID: '已打款', VOID: '已作废' };
+  const SETTLE_TYPE = { WITHDRAW: '提现结算', REFUND: '售后退款' };
   const AFTERSALE_STATUS = {
-    PENDING: '待处理',
-    PROCESSING: '处理中',
-    COLLECTING: '追款中',
-    REJECTED: '已拒绝',
-    COMPLETED: '已完结',
+    PENDING: '待处理', PROCESSING: '处理中', REFUNDING: '退款中', REJECTED: '已拒绝', COMPLETED: '已完结',
   };
+  const OFFSET_STATUS = { PENDING: '待冲抵', CLEARED: '已冲抵', VERIFIED: '已核销' };
 
-  function deepClone(obj) {
-    return JSON.parse(JSON.stringify(obj));
-  }
-
-  function nowISO() {
-    return new Date().toISOString();
-  }
-
+  function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+  function nowISO() { return new Date().toISOString(); }
   function fmtMoney(n) {
     return '¥' + Number(n || 0).toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
   }
-
   function fmtDate(iso) {
-    if (!iso) return '-';
-    const d = new Date(iso);
-    return d.toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+    if (!iso) return '—';
+    return new Date(iso).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
   }
-
-  function fmtDateShort(iso) {
-    if (!iso) return '-';
-    return iso.slice(0, 10);
-  }
-
+  function fmtDateShort(iso) { return iso ? iso.slice(0, 10) : '—'; }
   function escapeHtml(s) {
     if (s == null) return '';
-    return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
   const BMStore = {
-    STORAGE_KEY,
-    WITHDRAWAL_STATUS,
-    SETTLEMENT_STATUS,
-    AFTERSALE_STATUS,
-    fmtMoney,
-    fmtDate,
-    fmtDateShort,
-    escapeHtml,
+    STORAGE_KEY, WITHDRAWAL_STATUS, SETTLEMENT_STATUS, SETTLE_TYPE, AFTERSALE_STATUS, OFFSET_STATUS,
+    fmtMoney, fmtDate, fmtDateShort, escapeHtml,
 
-    
     loadState() {
       try {
         if (window.opener && !window.opener.closed && window.opener.BMStore) {
@@ -685,61 +508,107 @@ window.BM_DEMO = {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) return this.migrateState(JSON.parse(raw));
-      } catch (_) { /* ignore */ }
+      } catch (_) {}
       return this.migrateState(deepClone(global.BM_DEMO));
     },
 
     migrateState(state) {
+      if (!state.version || state.version < 2) {
+        return this.migrateState(deepClone(global.BM_DEMO));
+      }
+      if (state.account) {
+        state.account.withdrawn = state.account.withdrawn ?? state.account.settled ?? 0;
+        state.account.pendingOffset = state.account.pendingOffset ?? state.account.pendingAftersale ?? 0;
+        delete state.account.settled;
+        delete state.account.pendingAftersale;
+      }
       (state.aftersales || []).forEach((a) => {
-        if (a.status === '追款中') a.status = '处理中';
-        if (!a.collectTag) {
-          if ((a.merchantPayable || 0) > 0) {
-            a.collectTag = (a.merchantPaid || 0) >= a.merchantPayable - 0.01 ? '已追清' : '待追款';
-          } else {
-            a.collectTag = '无需追款';
-          }
+        a.shopPayable = a.shopPayable ?? a.merchantPayable ?? 0;
+        delete a.merchantPayable;
+        delete a.merchantPaid;
+        delete a.collectTag;
+        if (a.status === '追款中') a.status = AFTERSALE_STATUS.REFUNDING;
+        if (!a.needRefund) {
+          if (a.status === AFTERSALE_STATUS.REFUNDING || (a.refundAmount || 0) > 0) a.needRefund = '是';
+          else if (a.status === AFTERSALE_STATUS.COMPLETED && !(a.refundAmount || 0)) a.needRefund = '否';
         }
       });
-      state.account.pendingAftersale = (state.aftersales || [])
-        .filter((a) => a.collectTag === '待追款')
-        .reduce((s, a) => s + (Number(a.merchantPayable) || 0), 0);
-      (state.orders || []).forEach((o) => { delete o.aftersaleStatus; });
+      (state.withdrawals || []).forEach((w) => {
+        w.shopId = w.shopId ?? w.merchantId;
+        w.shopName = w.shopName ?? w.merchantName;
+        w.shopType = w.shopType ?? (w.merchantType === '号商' ? '店铺' : w.merchantType);
+        w.pendingOffsetAmount = w.pendingOffsetAmount ?? 0;
+        w.relatedAftersales = w.relatedAftersales ?? [];
+        delete w.merchantId; delete w.merchantName; delete w.merchantType;
+        delete w.openAftersaleCount;
+        if (w.status === '已撤销') w.status = WITHDRAWAL_STATUS.REJECTED;
+      });
+      (state.settlements || []).forEach((s) => {
+        if (s.status === '未结算') s.status = SETTLEMENT_STATUS.PENDING_PAY;
+        if (s.status === '已结算') s.status = SETTLEMENT_STATUS.PAID;
+        s.settleType = s.settleType ?? SETTLE_TYPE.WITHDRAW;
+        s.bizRefId = s.bizRefId ?? s.withdrawalId ?? s.aftersaleId ?? '';
+        s.shopId = s.shopId ?? s.merchantId;
+        s.shopName = s.shopName ?? s.merchantName;
+        s.shopType = s.shopType ?? '店铺';
+        if (s.bankAccount && !s.payeeAccount) {
+          s.payeeName = s.bankAccount.name;
+          s.payeeAccount = s.bankAccount.account;
+          s.payeeBank = s.bankAccount.bank;
+          s.payeePurpose = '提现款';
+        }
+        s.aftersaleItems = s.aftersaleItems ?? [];
+        delete s.withdrawalId; delete s.merchantId; delete s.merchantName; delete s.merchantType; delete s.bankAccount;
+      });
+      if (state.merchant) {
+        state.merchant.type = state.merchant.type === '号商' ? '店铺' : (state.merchant.type || '店铺');
+      }
+      if (!state.offsetRecords || !state.offsetRecords.length) {
+        state.offsetRecords = deepClone(global.BM_DEMO.offsetRecords || []);
+      }
+      if (!state.aftersaleFunds || !state.aftersaleFunds.length) {
+        state.aftersaleFunds = deepClone(global.BM_DEMO.aftersaleFunds || []);
+      }
+      state.nextIds = state.nextIds || {};
+      state.nextIds.offset = state.nextIds.offset ?? 4;
       return state;
     },
 
-    saveState(state) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    },
-
-    resetDemo() {
-      const state = this.migrateState(deepClone(global.BM_DEMO));
-      this.saveState(state);
-      return state;
-    },
+    saveState(state) { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); },
+    resetDemo() { const s = deepClone(global.BM_DEMO); this.saveState(s); return s; },
 
     getTotalAssets(account) {
-      return (account.pendingCredit || 0) + (account.withdrawable || 0) +
-        (account.withdrawing || 0) + (account.settled || 0);
+      return (account.pendingCredit || 0) + (account.withdrawable || 0) + (account.withdrawing || 0) + (account.withdrawn || 0);
     },
-
+    getNetWithdrawable(state) {
+      return Math.max(0, (state.account.withdrawable || 0) - (state.account.pendingOffset || 0));
+    },
+    canApplyWithdrawal(state) {
+      const acc = state.account;
+      if (this.getActiveWithdrawal(state)) return { ok: false, msg: '已有进行中的提现申请' };
+      if ((acc.withdrawable || 0) <= 0) return { ok: false, msg: '当前无可提现金额' };
+      if ((acc.withdrawable || 0) <= (acc.pendingOffset || 0)) return { ok: false, msg: '可提现金额须大于待冲抵金额方可提现' };
+      return { ok: true };
+    },
     getWithdrawableOrders(state) {
       return (state.orders || []).filter((o) => o.accountStatus === '可提现');
     },
-
     getActiveWithdrawal(state) {
-      return (state.withdrawals || []).find((w) =>
-        w.status === WITHDRAWAL_STATUS.PENDING_AUDIT || w.status === WITHDRAWAL_STATUS.PENDING_PAY);
+      return (state.withdrawals || []).find((w) => w.status === WITHDRAWAL_STATUS.PENDING_AUDIT || w.status === WITHDRAWAL_STATUS.PENDING_PAY);
     },
-
-    getOpenAftersales(state) {
-      return (state.aftersales || []).filter((a) =>
-        a.status === AFTERSALE_STATUS.PENDING ||
-        a.status === AFTERSALE_STATUS.PROCESSING ||
-        a.status === AFTERSALE_STATUS.COLLECTING);
+    getSettlementByBizRef(state, bizRefId) {
+      return (state.settlements || []).find((s) => s.bizRefId === bizRefId);
     },
-
     getSettlementByWithdrawal(state, withdrawalId) {
-      return (state.settlements || []).find((s) => s.withdrawalId === withdrawalId);
+      return this.getSettlementByBizRef(state, withdrawalId);
+    },
+    getRelatedOffsetAftersales(state) {
+      return (state.aftersales || []).filter((a) =>
+        a.liabilityParty === '店铺有责' && (a.shopPayable || 0) > 0 && a.status === AFTERSALE_STATUS.REFUNDING);
+    },
+    getProcessingDurationDays(a) {
+      if (!a.acceptedAt) return 0;
+      return Math.floor((Date.now() - new Date(a.acceptedAt).getTime()) / 86400000);
     },
 
     nextId(state, key, prefix) {
@@ -748,104 +617,180 @@ window.BM_DEMO = {
       const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
       return `${prefix}-${date}-${String(n).padStart(3, '0')}`;
     },
-
     addLog(state, type, desc) {
       if (!state.activityLog) state.activityLog = [];
       state.activityLog.unshift({ time: nowISO(), type, desc });
       if (state.activityLog.length > 30) state.activityLog.length = 30;
     },
 
-    applyWithdrawal(state) {
-      const active = this.getActiveWithdrawal(state);
-      if (active) return { ok: false, msg: '已有进行中的提现申请' };
-      const amount = state.account.withdrawable || 0;
-      if (amount <= 0) return { ok: false, msg: '当前无可提现金额' };
+    addOffsetRecord(state, record) {
+      if (!state.offsetRecords) state.offsetRecords = [];
+      const id = record.id || this.nextId(state, 'offset', 'OFF');
+      state.offsetRecords.unshift({
+        id,
+        type: record.type,
+        amount: record.amount,
+        balanceAfter: record.balanceAfter ?? (state.account.pendingOffset || 0),
+        refId: record.refId || '',
+        refType: record.refType || '',
+        description: record.description || '',
+        createdAt: record.createdAt || nowISO(),
+      });
+    },
 
+    getOffsetRecords(state, filters = {}) {
+      let list = (state.offsetRecords || []).slice();
+      if (filters.type) list = list.filter((r) => r.type === filters.type);
+      if (filters.dateFrom) list = list.filter((r) => r.createdAt.slice(0, 10) >= filters.dateFrom);
+      if (filters.dateTo) list = list.filter((r) => r.createdAt.slice(0, 10) <= filters.dateTo);
+      return list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    },
+
+    upsertAftersaleFund(state, aftersale, createdAt) {
+      if (!aftersale || !(aftersale.shopPayable > 0) || aftersale.liabilityParty !== '店铺有责') return;
+      if (!state.aftersaleFunds) state.aftersaleFunds = [];
+      const row = {
+        aftersaleId: aftersale.id,
+        orderId: aftersale.orderId,
+        shopName: aftersale.shopName || state.merchant?.name || '',
+        refundAmount: aftersale.refundAmount || 0,
+        platformPayable: aftersale.platformPayable || 0,
+        shopPayable: aftersale.shopPayable || 0,
+        offsetStatus: OFFSET_STATUS.PENDING,
+        clearedAt: '',
+        clearedBy: '',
+        verifyNote: '',
+        verifyVouchers: [],
+        createdAt: createdAt || nowISO(),
+      };
+      const idx = state.aftersaleFunds.findIndex((f) => f.aftersaleId === aftersale.id);
+      if (idx >= 0) Object.assign(state.aftersaleFunds[idx], row);
+      else state.aftersaleFunds.unshift(row);
+    },
+
+    getAftersaleFundShopOptions(state) {
+      const names = new Set();
+      (state.aftersaleFunds || []).forEach((f) => { if (f.shopName) names.add(f.shopName); });
+      return [...names].sort();
+    },
+
+    getAftersaleFunds(state, tab, filters = {}) {
+      let list = (state.aftersaleFunds || []).slice();
+      if (tab === 'pending') list = list.filter((f) => f.offsetStatus === OFFSET_STATUS.PENDING);
+      else if (tab === 'cleared') list = list.filter((f) => f.offsetStatus === OFFSET_STATUS.CLEARED);
+      else if (tab === 'verified') list = list.filter((f) => f.offsetStatus === OFFSET_STATUS.VERIFIED);
+      if (filters.shopName) list = list.filter((f) => f.shopName === filters.shopName);
+      if (filters.aftersaleId) {
+        const q = String(filters.aftersaleId).trim().toLowerCase();
+        list = list.filter((f) => f.aftersaleId.toLowerCase().includes(q));
+      }
+      return list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    },
+
+    getPendingAftersaleFundCount(state) {
+      return (state.aftersaleFunds || []).filter((f) => f.offsetStatus === OFFSET_STATUS.PENDING).length;
+    },
+
+    markAftersaleFundsClearedOnWithdraw(state, withdrawal, clearedAt) {
+      (withdrawal.relatedAftersales || []).forEach((aid) => {
+        const fund = (state.aftersaleFunds || []).find((f) => f.aftersaleId === aid);
+        if (fund && fund.offsetStatus === OFFSET_STATUS.PENDING) {
+          fund.offsetStatus = OFFSET_STATUS.CLEARED;
+          fund.clearedAt = clearedAt;
+          fund.clearedBy = '系统（提现冲抵）';
+        }
+      });
+    },
+
+    verifyAftersaleFunds(state, aftersaleIds, opts = {}) {
+      const ids = aftersaleIds || [];
+      if (!ids.length) return { ok: false, msg: '请选择待核销记录' };
+      const operator = opts.operator || '财务专员';
+      const note = (opts.note || '').trim();
+      const vouchers = (opts.vouchers || []).slice();
+      const t = nowISO();
+      let total = 0;
+      let count = 0;
+      ids.forEach((aid) => {
+        const fund = (state.aftersaleFunds || []).find((f) => f.aftersaleId === aid);
+        if (!fund || fund.offsetStatus !== OFFSET_STATUS.PENDING) return;
+        fund.offsetStatus = OFFSET_STATUS.VERIFIED;
+        fund.clearedAt = t;
+        fund.clearedBy = operator;
+        fund.verifyNote = note;
+        fund.verifyVouchers = vouchers;
+        const amt = fund.shopPayable || 0;
+        total += amt;
+        count += 1;
+        state.account.pendingOffset = Math.max(0, (state.account.pendingOffset || 0) - amt);
+        const desc = note
+          ? `财务核销待冲抵，店铺线下转账已核实到账（${note}）`
+          : '财务核销待冲抵，店铺线下转账已核实到账';
+        this.addOffsetRecord(state, {
+          type: '消除',
+          amount: amt,
+          balanceAfter: state.account.pendingOffset,
+          refId: fund.aftersaleId,
+          refType: '售后单',
+          description: desc,
+          createdAt: t,
+        });
+      });
+      if (!count) return { ok: false, msg: '所选记录均不可核销' };
+      const logNote = note ? `，备注：${note}` : '';
+      this.addLog(state, '核销待冲抵', `核销 ${count} 笔售后资金，合计 ${fmtMoney(total)}${logNote}`);
+      this.saveState(state);
+      return { ok: true, count, amount: total };
+    },
+
+    applyWithdrawal(state) {
+      const check = this.canApplyWithdrawal(state);
+      if (!check.ok) return check;
+      const amount = state.account.withdrawable || 0;
       const orders = this.getWithdrawableOrders(state);
+      const offset = state.account.pendingOffset || 0;
+      const related = this.getRelatedOffsetAftersales(state).map((a) => a.id);
       const wId = this.nextId(state, 'withdrawal', 'WD');
       const sId = this.nextId(state, 'settlement', 'STL');
       const t = nowISO();
+      const ba = state.merchant.bankAccount;
 
-      const userPaidTotal = orders.reduce((s, o) => s + o.userPaid, 0);
-      const feeTotal = orders.reduce((s, o) => s + o.platformFee, 0);
-      const compTotal = orders.reduce((s, o) => s + o.compensation, 0);
-
-      const withdrawal = {
-        id: wId,
-        merchantId: state.merchant.id,
-        merchantName: state.merchant.name,
-        merchantType: state.merchant.type,
-        applyTime: t,
-        amount,
-        status: WITHDRAWAL_STATUS.PENDING_AUDIT,
-        settlementId: sId,
-        openAftersaleCount: this.getOpenAftersales(state).length,
-        auditor: '',
-        auditTime: '',
-        rejectReason: '',
-        payRegisterTime: '',
-        note: '',
-      };
-
-      const settlement = {
-        id: sId,
-        withdrawalId: wId,
-        merchantId: state.merchant.id,
-        merchantName: state.merchant.name,
-        merchantType: state.merchant.type,
-        bankAccount: deepClone(state.merchant.bankAccount),
-        createdAt: t,
-        note: '卖家申请全额提现，系统自动生成结算单',
-        totalAmount: amount,
-        orderCount: orders.length,
-        userPaidTotal,
-        feeTotal,
-        compTotal,
-        status: SETTLEMENT_STATUS.UNSETTLED,
+      state.withdrawals.unshift({
+        id: wId, shopId: state.merchant.id, shopName: state.merchant.name, shopType: state.merchant.type,
+        applyTime: t, amount, status: WITHDRAWAL_STATUS.PENDING_AUDIT, settlementId: sId,
+        pendingOffsetAmount: offset, relatedAftersales: related,
+        auditor: '', auditTime: '', rejectReason: '', payRegisterTime: '', note: '',
+      });
+      state.settlements.unshift({
+        id: sId, settleType: SETTLE_TYPE.WITHDRAW, bizRefId: wId,
+        shopId: state.merchant.id, shopName: state.merchant.name, shopType: state.merchant.type,
+        payeeName: ba.name, payeeAccount: ba.account, payeeBank: ba.bank, payeePurpose: ba.purpose || '提现款',
+        createdAt: t, totalAmount: amount, orderCount: orders.length,
+        userPaidTotal: orders.reduce((s, o) => s + o.userPaid, 0),
+        feeTotal: orders.reduce((s, o) => s + o.platformFee, 0),
+        compTotal: orders.reduce((s, o) => s + o.compensation, 0),
+        status: SETTLEMENT_STATUS.PENDING_PAY,
         orders: orders.map((o, i) => ({
-          seq: i + 1,
-          orderId: o.id,
-          productName: o.productName,
-          orderStatus: o.status,
-          userPaid: o.userPaid,
-          platformFee: o.platformFee,
-          compensation: o.compensation,
-          settleAmount: o.settleAmount,
+          seq: i + 1, orderId: o.id, productName: o.productName, shopName: o.shopName || state.merchant.name,
+          userPaid: o.userPaid, platformFee: o.platformFee, paymentFee: o.paymentFee || 0, compensation: o.compensation, settleAmount: o.settleAmount,
         })),
-        payment: null,
-      };
-
-      state.withdrawals.unshift(withdrawal);
-      state.settlements.unshift(settlement);
+        aftersaleItems: [], payment: null,
+      });
       state.account.withdrawing = (state.account.withdrawing || 0) + amount;
       state.account.withdrawable = 0;
-      this.addLog(state, '申请提现', `${wId} 申请提现 ${fmtMoney(amount)}，关联结算单 ${sId}`);
+      this.addLog(state, '申请提现', `${wId} 申请提现 ${fmtMoney(amount)}，待冲抵 ${fmtMoney(offset)}`);
       this.saveState(state);
       return { ok: true, withdrawalId: wId };
     },
 
-    cancelWithdrawal(state, withdrawalId) {
-      const w = (state.withdrawals || []).find((x) => x.id === withdrawalId);
-      if (!w) return { ok: false, msg: '提现单不存在' };
-      if (w.status !== WITHDRAWAL_STATUS.PENDING_AUDIT) return { ok: false, msg: '仅待审核状态可撤销' };
-
-      const s = this.getSettlementByWithdrawal(state, withdrawalId);
-      w.status = WITHDRAWAL_STATUS.CANCELLED;
-      if (s) s.status = SETTLEMENT_STATUS.VOID;
-      state.account.withdrawable = (state.account.withdrawable || 0) + w.amount;
-      state.account.withdrawing = Math.max(0, (state.account.withdrawing || 0) - w.amount);
-      this.addLog(state, '撤销提现', `${w.id} 已撤销，¥${w.amount} 退回可提现`);
-      this.saveState(state);
-      return { ok: true };
-    },
-
-    approveWithdrawal(state, withdrawalId) {
+    approveWithdrawal(state, withdrawalId, opinion) {
       const w = (state.withdrawals || []).find((x) => x.id === withdrawalId);
       if (!w || w.status !== WITHDRAWAL_STATUS.PENDING_AUDIT) return { ok: false, msg: '状态不允许审批' };
       w.status = WITHDRAWAL_STATUS.PENDING_PAY;
       w.auditor = '运营审核员';
       w.auditTime = nowISO();
-      this.addLog(state, '提现审批', `${w.id} 审批通过，进入待打款`);
+      if (opinion?.trim()) w.note = opinion.trim();
+      this.addLog(state, '提现审批', `${w.id} 审批通过`);
       this.saveState(state);
       return { ok: true };
     },
@@ -853,9 +798,8 @@ window.BM_DEMO = {
     rejectWithdrawal(state, withdrawalId, reason) {
       const w = (state.withdrawals || []).find((x) => x.id === withdrawalId);
       if (!w || w.status !== WITHDRAWAL_STATUS.PENDING_AUDIT) return { ok: false, msg: '状态不允许驳回' };
-      if (!reason || !reason.trim()) return { ok: false, msg: '请填写驳回原因' };
-
-      const s = this.getSettlementByWithdrawal(state, withdrawalId);
+      if (!reason?.trim()) return { ok: false, msg: '请填写驳回原因' };
+      const s = this.getSettlementByBizRef(state, w.id);
       w.status = WITHDRAWAL_STATUS.REJECTED;
       w.rejectReason = reason.trim();
       w.auditor = '运营审核员';
@@ -863,55 +807,67 @@ window.BM_DEMO = {
       if (s) s.status = SETTLEMENT_STATUS.VOID;
       state.account.withdrawable = (state.account.withdrawable || 0) + w.amount;
       state.account.withdrawing = Math.max(0, (state.account.withdrawing || 0) - w.amount);
-      this.addLog(state, '提现驳回', `${w.id} 已驳回：${reason}`);
+      this.addLog(state, '提现驳回', `${w.id} 已驳回`);
       this.saveState(state);
       return { ok: true };
     },
 
-    registerPayment(state, withdrawalId, payment) {
-      const w = (state.withdrawals || []).find((x) => x.id === withdrawalId);
-      if (!w || w.status !== WITHDRAWAL_STATUS.PENDING_PAY) return { ok: false, msg: '状态不允许登记打款' };
-
-      const s = this.getSettlementByWithdrawal(state, withdrawalId);
+    registerSettlementPayment(state, settlementId, payment) {
+      const s = (state.settlements || []).find((x) => x.id === settlementId);
+      if (!s) return { ok: false, msg: '结算单不存在' };
+      if (s.status !== SETTLEMENT_STATUS.PENDING_PAY) return { ok: false, msg: '该结算单不可打款' };
       const t = nowISO();
-      w.status = WITHDRAWAL_STATUS.COMPLETED;
-      w.payRegisterTime = t;
-      if (s) {
-        s.status = SETTLEMENT_STATUS.SETTLED;
-        s.payment = {
-          payDate: payment.payDate,
-          actualAmount: payment.actualAmount,
-          bankRef: payment.bankRef,
-          registrar: '财务专员',
-          registerTime: t,
-          note: payment.note || '',
-        };
+      s.status = SETTLEMENT_STATUS.PAID;
+      s.payment = {
+        registerTime: t,
+        note: payment.note || '',
+        vouchers: (payment.vouchers || []).slice(),
+      };
+
+      if (s.settleType === SETTLE_TYPE.WITHDRAW) {
+        const w = (state.withdrawals || []).find((x) => x.id === s.bizRefId);
+        if (w) {
+          w.status = WITHDRAWAL_STATUS.COMPLETED;
+          w.payRegisterTime = t;
+          state.account.withdrawn = (state.account.withdrawn || 0) + w.amount;
+          state.account.withdrawing = Math.max(0, (state.account.withdrawing || 0) - w.amount);
+          const offsetAmt = w.pendingOffsetAmount || 0;
+          state.account.pendingOffset = 0;
+          if (offsetAmt > 0) {
+            this.markAftersaleFundsClearedOnWithdraw(state, w, t);
+            this.addOffsetRecord(state, {
+              type: '消除',
+              amount: offsetAmt,
+              balanceAfter: 0,
+              refId: w.id,
+              refType: '提现单',
+              description: `提现打款完成，待冲抵 ${fmtMoney(offsetAmt)} 从提现金额中抵扣并归零`,
+              createdAt: t,
+            });
+          }
+        }
         (s.orders || []).forEach((o) => {
           const order = (state.orders || []).find((x) => x.id === o.orderId);
-          if (order) order.accountStatus = '已结算';
+          if (order) order.accountStatus = '已提现';
         });
+        this.addLog(state, '提现打款', `结算单 ${s.id} 已打款，店铺待冲抵归零`);
+      } else if (s.settleType === SETTLE_TYPE.REFUND) {
+        const a = (state.aftersales || []).find((x) => x.id === s.bizRefId);
+        if (a) a.status = AFTERSALE_STATUS.COMPLETED;
+        this.addLog(state, '售后打款', `结算单 ${s.id} 已打款，售后单 ${s.bizRefId} 已完结`);
       }
-
-      state.account.settled = (state.account.settled || 0) + w.amount;
-      state.account.withdrawing = Math.max(0, (state.account.withdrawing || 0) - w.amount);
-
-      const cfId = this.nextId(state, 'cashflow', 'CF');
-      state.cashflows.unshift({
-        id: cfId,
-        time: payment.payDate + 'T12:00:00',
-        bizType: '卖家结算',
-        refNo: s ? s.id : w.id,
-        direction: '支出',
-        amount: payment.actualAmount,
-        payer: '斑马优号平台',
-        payee: state.merchant.name,
-        channel: '银行转账',
-        note: payment.note || '',
-      });
-
-      this.addLog(state, '打款登记', `${w.id} 打款完成 ${fmtMoney(payment.actualAmount)}`);
       this.saveState(state);
       return { ok: true };
+    },
+
+    batchMarkPaid(state, settlementIds, payment) {
+      const ids = settlementIds || [];
+      if (!ids.length) return { ok: false, msg: '请选择结算单' };
+      const payload = typeof payment === 'string'
+        ? { note: payment || '批量标记打款', vouchers: [] }
+        : { note: payment?.note || '批量标记打款', vouchers: payment?.vouchers || [] };
+      ids.forEach((id) => this.registerSettlementPayment(state, id, payload));
+      return { ok: true, count: ids.length };
     },
 
     acceptAftersale(state, id) {
@@ -919,22 +875,48 @@ window.BM_DEMO = {
       if (!a || a.status !== AFTERSALE_STATUS.PENDING) return { ok: false, msg: '状态不允许受理' };
       a.status = AFTERSALE_STATUS.PROCESSING;
       a.handler = a.handler || '客服专员';
+      a.acceptedAt = nowISO();
       this.saveState(state);
       return { ok: true };
     },
 
-    updateAftersaleAmounts(state, id, amounts) {
+    updateAftersaleFields(state, id, fields) {
       const a = (state.aftersales || []).find((x) => x.id === id);
       if (!a) return { ok: false, msg: '售后单不存在' };
-      const refund = Number(amounts.refundAmount) || 0;
-      const merchant = Number(amounts.merchantPayable) || 0;
-      const platform = Number(amounts.platformPayable) || 0;
-      if (Math.abs(refund - merchant - platform) > 0.01) {
-        return { ok: false, msg: '退款金额须等于号商应付 + 平台应付' };
+      if (a.status === AFTERSALE_STATUS.COMPLETED || a.status === AFTERSALE_STATUS.REJECTED || a.status === AFTERSALE_STATUS.REFUNDING) {
+        return { ok: false, msg: '当前状态不可编辑' };
       }
-      a.refundAmount = refund;
-      a.merchantPayable = merchant;
-      a.platformPayable = platform;
+      const needRefund = fields.needRefund ?? a.needRefund ?? '';
+      const refund = Number(fields.refundAmount) || 0;
+      const shop = Number(fields.shopPayable) || 0;
+      const platform = Number(fields.platformPayable) || 0;
+      if (needRefund === '是' && refund > 0 && Math.abs(refund - shop - platform) > 0.01) {
+        return { ok: false, msg: '退款金额须等于店铺应付 + 平台应付' };
+      }
+      const patch = {
+        aftersaleType: fields.aftersaleType ?? a.aftersaleType,
+        needRefund,
+        note: fields.note ?? a.note,
+      };
+      if (needRefund === '是') {
+        Object.assign(patch, {
+          liabilityParty: fields.liabilityParty ?? a.liabilityParty,
+          refundAmount: refund,
+          shopPayable: shop,
+          platformPayable: platform,
+          payeeName: fields.payeeName ?? a.payeeName,
+          payeeAccount: fields.payeeAccount ?? a.payeeAccount,
+          payeeBank: fields.payeeBank ?? a.payeeBank,
+          payeePurpose: fields.payeePurpose ?? a.payeePurpose,
+        });
+      } else if (needRefund === '否') {
+        Object.assign(patch, {
+          liabilityParty: '',
+          refundAmount: 0, shopPayable: 0, platformPayable: 0,
+          payeeName: '', payeeAccount: '', payeeBank: '', payeePurpose: '',
+        });
+      }
+      Object.assign(a, patch);
       this.saveState(state);
       return { ok: true };
     },
@@ -947,106 +929,122 @@ window.BM_DEMO = {
       return { ok: true };
     },
 
-    completeAftersale(state, id) {
+    completeAftersaleNoRefund(state, id) {
       const a = (state.aftersales || []).find((x) => x.id === id);
       if (!a || a.status !== AFTERSALE_STATUS.PROCESSING) return { ok: false, msg: '状态不允许完结' };
-      if (a.merchantPayable > 0) return { ok: false, msg: '号商应付大于 0 时请进入追款' };
+      if (a.needRefund !== '否') return { ok: false, msg: '请选择「是否需要退款」为否' };
       a.status = AFTERSALE_STATUS.COMPLETED;
       this.saveState(state);
       return { ok: true };
     },
 
-    enterCollecting(state, id) {
+    confirmRefund(state, id) {
       const a = (state.aftersales || []).find((x) => x.id === id);
-      if (!a || a.status !== AFTERSALE_STATUS.PROCESSING) return { ok: false, msg: '状态不允许' };
-      if (a.merchantPayable <= 0) return { ok: false, msg: '号商应付须大于 0 才能进入追款' };
-      a.status = AFTERSALE_STATUS.COLLECTING;
-      state.account.pendingAftersale = (state.account.pendingAftersale || 0) + a.merchantPayable;
-      this.addLog(state, '进入追款', `${a.id} 号商应付 ${fmtMoney(a.merchantPayable)} 计入待售后`);
-      this.saveState(state);
-      return { ok: true };
-    },
-
-    registerAftersaleCashflow(state, id, entry) {
-      const a = (state.aftersales || []).find((x) => x.id === id);
-      if (!a) return { ok: false, msg: '售后单不存在' };
-
-      const amount = Number(entry.amount) || 0;
-      if (amount <= 0) return { ok: false, msg: '金额须大于 0' };
-
-      const cfId = this.nextId(state, 'cashflow', 'CF');
-      const direction = entry.direction || '收入';
-      state.cashflows.unshift({
-        id: cfId,
-        time: nowISO(),
-        bizType: '售后处理',
-        refNo: a.id,
-        direction,
-        amount,
-        payer: direction === '收入' ? state.merchant.name : '斑马优号平台',
-        payee: direction === '收入' ? '斑马优号平台' : '买家',
-        channel: entry.channel || '银行转账',
-        note: entry.note || '',
+      if (!a || a.status !== AFTERSALE_STATUS.PROCESSING) return { ok: false, msg: '仅处理中状态可确认退款' };
+      if (a.needRefund !== '是') return { ok: false, msg: '请选择「是否需要退款」为是' };
+      if (!a.refundAmount || a.refundAmount <= 0) return { ok: false, msg: '请填写退款金额' };
+      if (!a.payeeName || !a.payeeAccount) return { ok: false, msg: '请填写买家收款信息' };
+      const sId = this.nextId(state, 'settlement', 'STL');
+      const t = nowISO();
+      state.settlements.unshift({
+        id: sId, settleType: SETTLE_TYPE.REFUND, bizRefId: a.id,
+        shopId: state.merchant.id, shopName: state.merchant.name, shopType: '店铺',
+        payeeName: a.payeeName, payeeAccount: a.payeeAccount, payeeBank: a.payeeBank || '支付宝', payeePurpose: a.payeePurpose || '售后退款',
+        createdAt: t, totalAmount: a.refundAmount, orderCount: 0,
+        userPaidTotal: 0, feeTotal: 0, compTotal: 0, status: SETTLEMENT_STATUS.PENDING_PAY,
+        orders: [],
+        aftersaleItems: [{
+          aftersaleId: a.id, productName: a.productName, shopName: state.merchant.name,
+          refundAmount: a.refundAmount, platformPayable: a.platformPayable, shopPayable: a.shopPayable, paymentFee: 0,
+        }],
+        payment: null,
       });
-
-      if (direction === '收入') {
-        a.merchantPaid = (a.merchantPaid || 0) + amount;
+      a.status = AFTERSALE_STATUS.REFUNDING;
+      a.settlementId = sId;
+      if (a.liabilityParty === '店铺有责' && (a.shopPayable || 0) > 0) {
+        state.account.pendingOffset = (state.account.pendingOffset || 0) + a.shopPayable;
+        this.addOffsetRecord(state, {
+          type: '产生',
+          amount: a.shopPayable,
+          refId: a.id,
+          refType: '售后单',
+          description: `店铺有责售后退款，店铺应付 ${fmtMoney(a.shopPayable)} 计入待冲抵`,
+          createdAt: t,
+        });
+        this.upsertAftersaleFund(state, a, t);
       }
+      this.addLog(state, '确认退款', `${a.id} 创建结算单 ${sId}，进入退款中`);
       this.saveState(state);
-      return { ok: true };
+      return { ok: true, settlementId: sId };
     },
 
-    completeCollecting(state, id) {
-      const a = (state.aftersales || []).find((x) => x.id === id);
-      if (!a || a.status !== AFTERSALE_STATUS.COLLECTING) return { ok: false, msg: '状态不允许完结' };
-      const remaining = a.merchantPayable - (a.merchantPaid || 0);
-      if (remaining > 0.01) return { ok: false, msg: `尚有 ${fmtMoney(remaining)} 未追回，请先登记收支` };
-
-      state.account.pendingAftersale = Math.max(0, (state.account.pendingAftersale || 0) - a.merchantPayable);
-      a.status = AFTERSALE_STATUS.COMPLETED;
-      this.addLog(state, '追款完结', `${a.id} 追款完成，待售后减少 ${fmtMoney(a.merchantPayable)}`);
-      this.saveState(state);
-      return { ok: true };
+    getReportShopOptions(state) {
+      const names = new Set();
+      (state.orders || []).forEach((o) => names.add(o.shopName || state.merchant?.name || '—'));
+      return [...names].sort();
     },
 
-    filterCashflows(state, filters) {
-      let list = (state.cashflows || []).slice();
-      if (filters.bizType) list = list.filter((c) => c.bizType === filters.bizType);
-      if (filters.direction) list = list.filter((c) => c.direction === filters.direction);
-      if (filters.dateFrom) list = list.filter((c) => c.time.slice(0, 10) >= filters.dateFrom);
-      if (filters.dateTo) list = list.filter((c) => c.time.slice(0, 10) <= filters.dateTo);
-      return list.sort((a, b) => (b.time > a.time ? 1 : -1));
+    getFinancialReport(state, filters = {}) {
+      const start = filters.startDate || '2026-05-01';
+      const end = filters.endDate || '2026-05-31';
+      const shop = filters.shopName || '';
+      return (state.orders || []).filter((o) => {
+        if (o.status !== '交易完成' || !o.completedAt) return false;
+        const d = o.completedAt.slice(0, 10);
+        if (d < start || d > end) return false;
+        if (shop && (o.shopName || state.merchant?.name) !== shop) return false;
+        return true;
+      });
+    },
+
+    exportFinancialReportCsv(state, filters) {
+      const rows = this.getFinancialReport(state, filters);
+      const header = ['订单号', '店铺名称', '商品', '用户实付', '店铺应结算', '平台服务费', '支付服务费', '履约扣除'];
+      const lines = ['\uFEFF' + header.join(',')];
+      rows.forEach((o) => {
+        lines.push([o.id, o.shopName || state.merchant.name, o.productName, o.userPaid, o.shopSettle ?? o.settleAmount, o.platformFee, o.paymentFee || 0, o.compensation].join(','));
+      });
+      return lines.join('\n');
+    },
+
+    exportBatchTransferCsv(state, settlementIds) {
+      const header = ['收款方名称', '收款方账号', '收款方开户行', '金额', '附言/用途', '结算单号', '关联业务单号'];
+      const lines = ['\uFEFF' + header.join(',')];
+      (settlementIds || []).forEach((id) => {
+        const s = (state.settlements || []).find((x) => x.id === id);
+        if (s && s.status === SETTLEMENT_STATUS.PENDING_PAY) {
+          lines.push([s.payeeName, s.payeeAccount, s.payeeBank || '', s.totalAmount, s.payeePurpose || '', s.id, s.bizRefId].join(','));
+        }
+      });
+      return lines.join('\n');
+    },
+
+    exportSettlementCsv(state, settlementId) {
+      const s = (state.settlements || []).find((x) => x.id === settlementId);
+      if (!s) return '';
+      const lines = ['\uFEFF结算单导出'];
+      lines.push(`结算单号,${s.id}`);
+      lines.push(`结算类型,${s.settleType}`);
+      lines.push(`关联业务单号,${s.bizRefId}`);
+      lines.push(`结算金额,${s.totalAmount}`);
+      lines.push(`收款方,${s.payeeName},${s.payeeAccount},${s.payeeBank}`);
+      if (s.settleType === SETTLE_TYPE.WITHDRAW) {
+        lines.push('', '订单明细', '序号,订单号,商品,用户实付,平台服务费,支付服务费,履约包赔,应结金额');
+        (s.orders || []).forEach((o) => lines.push([o.seq, o.orderId, o.productName, o.userPaid, o.platformFee, o.paymentFee || 0, o.compensation, o.settleAmount].join(',')));
+      } else {
+        lines.push('', '售后明细', '售后单号,商品,退款金额,平台应付,店铺应付');
+        (s.aftersaleItems || []).forEach((o) => lines.push([o.aftersaleId, o.productName, o.refundAmount, o.platformPayable, o.shopPayable].join(',')));
+      }
+      return lines.join('\n');
     },
 
     statusBadgeClass(status) {
       const map = {
-        '待审核': 'badge-orange',
-        '待打款': 'badge-blue',
-        '已驳回': 'badge-red',
-        '已撤销': 'badge-gray',
-        '已完结': 'badge-green',
-        '待处理': 'badge-orange',
-        '处理中': 'badge-blue',
-        '追款中': 'badge-red',
-        '已拒绝': 'badge-gray',
-        '未结算': 'badge-orange',
-        '已作废': 'badge-gray',
-        '已结算': 'badge-green',
+        '待审核': 'badge-orange', '待打款': 'badge-blue', '已驳回': 'badge-red', '已完结': 'badge-green',
+        '待处理': 'badge-orange', '处理中': 'badge-blue', '退款中': 'badge-blue', '已拒绝': 'badge-gray',
+        '已作废': 'badge-gray', '已打款': 'badge-green',
       };
       return map[status] || 'badge-gray';
-    },
-
-    exportCashflowsCsv(state, filters) {
-      const rows = this.filterCashflows(state, filters);
-      const header = ['流水单号', '时间', '业务类型', '关联单号', '方向', '金额', '付款方', '收款方', '渠道', '备注'];
-      const lines = [header.join(',')];
-      rows.forEach((r) => {
-        lines.push([
-          r.id, r.time, r.bizType, r.refNo, r.direction, r.amount,
-          r.payer, r.payee, r.channel, (r.note || '').replace(/,/g, '，'),
-        ].join(','));
-      });
-      return '\uFEFF' + lines.join('\n');
     },
   };
 
@@ -1056,7 +1054,7 @@ window.BM_DEMO = {
   </script>
   <script>
 /**
- * 号商端可交互原型
+ * 店铺端可交互原型 (V5)
  */
 (function () {
   const S = BMStore;
@@ -1070,17 +1068,15 @@ window.BM_DEMO = {
     withdrawStatusFilter: '',
     withdrawDateFrom: '',
     withdrawDateTo: '',
+    offsetTypeFilter: '',
+    offsetDateFrom: '',
+    offsetDateTo: '',
   };
 
   function getOrderWithdrawStatus(o) {
-    if (o.withdrawStatus) return o.withdrawStatus;
-    const map = { '已结算': '已提现', '可提现': '可提现', '待入账': '待入账', '提现中': '可提现' };
-    return map[o.accountStatus] || '可提现';
-  }
-
-  function withdrawStatusBadgeCls(s) {
-    if (s === '已提现') return 'badge-green';
-    return 'badge-gray';
+    if (o.accountStatus === '已提现' || o.accountStatus === '已结算') return '已提现';
+    if (o.accountStatus === '待入账') return '待入账';
+    return '可提现';
   }
 
   function toast(msg) {
@@ -1093,8 +1089,7 @@ window.BM_DEMO = {
   function navigate(page, id) {
     route.page = page || 'account';
     route.id = id || '';
-    if (route.id) location.hash = `#/${route.page}/${route.id}`;
-    else location.hash = '#/account';
+    location.hash = route.id ? `#/${route.page}/${route.id}` : '#/account';
     render();
   }
 
@@ -1105,63 +1100,46 @@ window.BM_DEMO = {
   }
 
   function openModal(html) {
-    const isFullModal = html.trimStart().startsWith('<div class="modal');
+    const isFull = html.trimStart().startsWith('<div class="modal');
     document.getElementById('overlay').innerHTML =
-      `<div class="modal-overlay" onclick="SellerApp.closeModal(event)">
-        ${isFullModal ? html : `<div class="modal" onclick="event.stopPropagation()">${html}</div>`}
-      </div>`;
-    if (isFullModal) {
-      const modal = document.querySelector('#overlay .modal');
-      if (modal) modal.addEventListener('click', (e) => e.stopPropagation());
-    }
+      `<div class="modal-overlay" onclick="SellerApp.closeModal(event)">${isFull ? html : `<div class="modal" onclick="event.stopPropagation()">${html}</div>`}</div>`;
+    const modal = document.querySelector('#overlay .modal');
+    if (modal) modal.addEventListener('click', (e) => e.stopPropagation());
   }
 
-  function closeOverlay() {
-    document.getElementById('overlay').innerHTML = '';
-  }
+  function closeOverlay() { document.getElementById('overlay').innerHTML = ''; }
 
   function renderOrdersPanel() {
     let list = (state.orders || []).slice();
-    if (ui.orderWithdrawFilter) {
-      list = list.filter((o) => getOrderWithdrawStatus(o) === ui.orderWithdrawFilter);
-    }
-    if (ui.orderDateFrom) {
-      list = list.filter((o) => o.completedAt && o.completedAt.slice(0, 10) >= ui.orderDateFrom);
-    }
-    if (ui.orderDateTo) {
-      list = list.filter((o) => o.completedAt && o.completedAt.slice(0, 10) <= ui.orderDateTo);
-    }
+    if (ui.orderWithdrawFilter) list = list.filter((o) => getOrderWithdrawStatus(o) === ui.orderWithdrawFilter);
+    if (ui.orderDateFrom) list = list.filter((o) => o.completedAt && o.completedAt.slice(0, 10) >= ui.orderDateFrom);
+    if (ui.orderDateTo) list = list.filter((o) => o.completedAt && o.completedAt.slice(0, 10) <= ui.orderDateTo);
 
     const rows = list.map((o) => {
       const ws = getOrderWithdrawStatus(o);
-      return `<tr class="no-click">
-        <td>${S.escapeHtml(o.id)}</td>
-        <td>${S.escapeHtml(o.productName)}</td>
-        <td>${S.escapeHtml(o.status)}</td>
-        <td><span class="badge ${withdrawStatusBadgeCls(ws)}">${ws}</span></td>
-        <td>${S.fmtMoney(o.settleAmount)}</td>
-        <td>${o.completedAt ? S.fmtDateShort(o.completedAt) : '-'}</td>
-      </tr>`;
+      return `<tr class="no-click"><td>${S.escapeHtml(o.id)}</td><td>${S.escapeHtml(o.productName)}</td>
+        <td>${S.escapeHtml(o.status)}</td><td><span class="badge ${ws === '已提现' ? 'badge-green' : 'badge-gray'}">${ws}</span></td>
+        <td>${S.fmtMoney(o.settleAmount)}</td><td>${o.completedAt ? S.fmtDateShort(o.completedAt) : '—'}</td></tr>`;
     }).join('');
 
     return `<div class="filter-bar">
-        <select class="form-select" style="width:140px" data-order-wd-filter>
-          <option value="">全部提现状态</option>
-          <option value="可提现" ${ui.orderWithdrawFilter === '可提现' ? 'selected' : ''}>可提现</option>
-          <option value="待入账" ${ui.orderWithdrawFilter === '待入账' ? 'selected' : ''}>待入账</option>
-          <option value="已提现" ${ui.orderWithdrawFilter === '已提现' ? 'selected' : ''}>已提现</option>
-        </select>
-        <input class="form-input" type="date" style="width:160px" data-order-date-from value="${ui.orderDateFrom}">
-        <span style="color:var(--gray-400)">至</span>
-        <input class="form-input" type="date" style="width:160px" data-order-date-to value="${ui.orderDateTo}">
-        <button class="btn btn-primary btn-sm" data-order-filter>筛选</button>
-      </div>
-      <div class="list-panel" style="border:none;border-radius:0">
-        <table class="data-table">
-          <thead><tr><th>订单号</th><th>商品</th><th>订单状态</th><th>提现状态</th><th>结算金额</th><th>完成时间</th></tr></thead>
-          <tbody>${rows || '<tr class="no-click"><td colspan="6" class="empty-state">暂无订单</td></tr>'}</tbody>
-        </table>
-      </div>`;
+      <select class="form-select" style="width:140px" data-order-wd-filter>
+        <option value="">全部提现状态</option>
+        <option value="可提现" ${ui.orderWithdrawFilter === '可提现' ? 'selected' : ''}>可提现</option>
+        <option value="待入账" ${ui.orderWithdrawFilter === '待入账' ? 'selected' : ''}>待入账</option>
+        <option value="已提现" ${ui.orderWithdrawFilter === '已提现' ? 'selected' : ''}>已提现</option>
+      </select>
+      <input class="form-input" type="date" style="width:160px" data-order-date-from value="${ui.orderDateFrom}">
+      <span style="color:var(--gray-400)">至</span>
+      <input class="form-input" type="date" style="width:160px" data-order-date-to value="${ui.orderDateTo}">
+      <button class="btn btn-primary btn-sm" data-order-filter>筛选</button>
+    </div>
+    <div class="list-panel" style="border:none;border-radius:0">
+      <table class="data-table">
+        <thead><tr><th>订单号</th><th>商品</th><th>订单状态</th><th>提现状态</th><th>结算金额</th><th>完成时间</th></tr></thead>
+        <tbody>${rows || '<tr class="no-click"><td colspan="6" class="empty-state">暂无订单</td></tr>'}</tbody>
+      </table>
+    </div>`;
   }
 
   function renderWithdrawalsPanel() {
@@ -1170,45 +1148,88 @@ window.BM_DEMO = {
     if (ui.withdrawDateFrom) list = list.filter((w) => w.applyTime.slice(0, 10) >= ui.withdrawDateFrom);
     if (ui.withdrawDateTo) list = list.filter((w) => w.applyTime.slice(0, 10) <= ui.withdrawDateTo);
 
-    const rows = list.map((w) =>
-      `<tr data-goto-withdraw="${w.id}">
-        <td>${S.escapeHtml(w.id)}</td>
-        <td>${S.fmtMoney(w.amount)}</td>
-        <td><span class="badge ${S.statusBadgeClass(w.status)}">${S.escapeHtml(w.status)}</span></td>
-        <td>${S.escapeHtml(w.settlementId)}</td>
-        <td>${S.fmtDate(w.applyTime)}</td>
-      </tr>`).join('');
+    const rows = list.map((w) => `<tr data-goto-withdraw="${w.id}">
+      <td>${S.escapeHtml(w.id)}</td><td>${S.fmtMoney(w.amount)}</td>
+      <td><span class="badge ${S.statusBadgeClass(w.status)}">${S.escapeHtml(w.status)}</span></td>
+      <td>${S.escapeHtml(w.settlementId)}</td><td>${S.fmtDate(w.applyTime)}</td></tr>`).join('');
 
     return `<div class="filter-bar">
-        <select class="form-select" style="width:140px" data-wd-status-filter>
-          <option value="">全部状态</option>
-          <option value="待审核" ${ui.withdrawStatusFilter === '待审核' ? 'selected' : ''}>待审核</option>
-          <option value="待打款" ${ui.withdrawStatusFilter === '待打款' ? 'selected' : ''}>待打款</option>
-          <option value="已完结" ${ui.withdrawStatusFilter === '已完结' ? 'selected' : ''}>已完结</option>
-          <option value="已驳回" ${ui.withdrawStatusFilter === '已驳回' ? 'selected' : ''}>已驳回</option>
-          <option value="已撤销" ${ui.withdrawStatusFilter === '已撤销' ? 'selected' : ''}>已撤销</option>
-        </select>
-        <input class="form-input" type="date" style="width:160px" data-wd-date-from value="${ui.withdrawDateFrom}">
-        <span style="color:var(--gray-400)">至</span>
-        <input class="form-input" type="date" style="width:160px" data-wd-date-to value="${ui.withdrawDateTo}">
-        <button class="btn btn-primary btn-sm" data-wd-filter>筛选</button>
-      </div>
-      <div class="list-panel" style="border:none;border-radius:0">
-        <table class="data-table">
-          <thead><tr><th>提现单号</th><th>申请金额</th><th>状态</th><th>结算单号</th><th>申请时间</th></tr></thead>
-          <tbody>${rows || '<tr class="no-click"><td colspan="5" class="empty-state">暂无提现记录</td></tr>'}</tbody>
-        </table>
-      </div>`;
+      <select class="form-select" style="width:140px" data-wd-status-filter>
+        <option value="">全部状态</option>
+        <option value="待审核" ${ui.withdrawStatusFilter === '待审核' ? 'selected' : ''}>待审核</option>
+        <option value="待打款" ${ui.withdrawStatusFilter === '待打款' ? 'selected' : ''}>待打款</option>
+        <option value="已完结" ${ui.withdrawStatusFilter === '已完结' ? 'selected' : ''}>已完结</option>
+        <option value="已驳回" ${ui.withdrawStatusFilter === '已驳回' ? 'selected' : ''}>已驳回</option>
+      </select>
+      <input class="form-input" type="date" style="width:160px" data-wd-date-from value="${ui.withdrawDateFrom}">
+      <span style="color:var(--gray-400)">至</span>
+      <input class="form-input" type="date" style="width:160px" data-wd-date-to value="${ui.withdrawDateTo}">
+      <button class="btn btn-primary btn-sm" data-wd-filter>筛选</button>
+    </div>
+    <div class="list-panel" style="border:none;border-radius:0">
+      <table class="data-table">
+        <thead><tr><th>提现单号</th><th>申请金额</th><th>状态</th><th>结算单号</th><th>申请时间</th></tr></thead>
+        <tbody>${rows || '<tr class="no-click"><td colspan="5" class="empty-state">暂无提现记录</td></tr>'}</tbody>
+      </table>
+    </div>`;
+  }
+
+  function renderOffsetRecordsPanel() {
+    const pending = state.account.pendingOffset || 0;
+    const list = S.getOffsetRecords(state, {
+      type: ui.offsetTypeFilter,
+      dateFrom: ui.offsetDateFrom,
+      dateTo: ui.offsetDateTo,
+    });
+
+    const rows = list.map((r) => {
+      const isCreate = r.type === '产生';
+      const amountCls = isCreate ? 'style="color:var(--danger);font-weight:600"' : 'style="color:var(--success);font-weight:600"';
+      const amountText = isCreate ? `+${S.fmtMoney(r.amount)}` : `-${S.fmtMoney(r.amount)}`;
+      const typeBadge = isCreate ? 'badge-red' : 'badge-green';
+      return `<tr class="no-click">
+        <td>${S.fmtDate(r.createdAt)}</td>
+        <td><span class="badge ${typeBadge}">${S.escapeHtml(r.type)}</span></td>
+        <td ${amountCls}>${amountText}</td>
+        <td>${S.fmtMoney(r.balanceAfter)}</td>
+        <td>${S.escapeHtml(r.refType)} · ${S.escapeHtml(r.refId)}</td>
+        <td>${S.escapeHtml(r.description)}</td>
+      </tr>`;
+    }).join('');
+
+    return `<div class="alert alert-info" style="margin:12px 16px 0">
+      当前待冲抵余额 <strong style="color:var(--danger)">${S.fmtMoney(pending)}</strong>。
+      「产生」= 店铺有责售后退款后计入欠款；「消除」= 提现打款时从提现金额中抵扣并归零。
+    </div>
+    <div class="filter-bar">
+      <select class="form-select" style="width:140px" data-offset-type-filter>
+        <option value="">全部类型</option>
+        <option value="产生" ${ui.offsetTypeFilter === '产生' ? 'selected' : ''}>产生</option>
+        <option value="消除" ${ui.offsetTypeFilter === '消除' ? 'selected' : ''}>消除</option>
+      </select>
+      <input class="form-input" type="date" style="width:160px" data-offset-date-from value="${ui.offsetDateFrom}">
+      <span style="color:var(--gray-400)">至</span>
+      <input class="form-input" type="date" style="width:160px" data-offset-date-to value="${ui.offsetDateTo}">
+      <button class="btn btn-primary btn-sm" data-offset-filter>筛选</button>
+    </div>
+    <div class="list-panel" style="border:none;border-radius:0">
+      <table class="data-table">
+        <thead><tr><th>时间</th><th>类型</th><th>变动金额</th><th>变动后待冲抵</th><th>关联单号</th><th>说明</th></tr></thead>
+        <tbody>${rows || '<tr class="no-click"><td colspan="6" class="empty-state">暂无冲抵记录</td></tr>'}</tbody>
+      </table>
+    </div>`;
   }
 
   function renderListSection() {
-    const tabOrders = ui.listTab === 'orders' ? 'active' : '';
-    const tabWd = ui.listTab === 'withdrawals' ? 'active' : '';
-    const panel = ui.listTab === 'orders' ? renderOrdersPanel() : renderWithdrawalsPanel();
+    let panel = renderOrdersPanel();
+    if (ui.listTab === 'withdrawals') panel = renderWithdrawalsPanel();
+    else if (ui.listTab === 'offsets') panel = renderOffsetRecordsPanel();
+
     return `<div class="list-wrap">
       <div class="tab-bar">
-        <div class="tab-item ${tabOrders}" data-list-tab="orders">订单明细</div>
-        <div class="tab-item ${tabWd}" data-list-tab="withdrawals">提现记录</div>
+        <div class="tab-item ${ui.listTab === 'orders' ? 'active' : ''}" data-list-tab="orders">订单明细</div>
+        <div class="tab-item ${ui.listTab === 'withdrawals' ? 'active' : ''}" data-list-tab="withdrawals">提现记录</div>
+        <div class="tab-item ${ui.listTab === 'offsets' ? 'active' : ''}" data-list-tab="offsets">冲抵记录</div>
       </div>
       ${panel}
     </div>`;
@@ -1217,101 +1238,109 @@ window.BM_DEMO = {
   function renderAccount() {
     const acc = state.account;
     const active = S.getActiveWithdrawal(state);
-    const canWithdraw = (acc.withdrawable || 0) > 0 && !active;
+    const offset = acc.pendingOffset || 0;
+    const withdrawable = acc.withdrawable || 0;
+    const net = S.getNetWithdrawable(state);
+    const canWithdraw = S.canApplyWithdrawal(state).ok;
 
     const cards = [
       { key: 'pendingCredit', label: '待入账', hint: '待交易完成', debt: false },
       { key: 'withdrawable', label: '可提现', hint: '订单交易完成', debt: false },
       { key: 'withdrawing', label: '提现中', hint: '等待打款', debt: false },
-      { key: 'settled', label: '已结算', hint: '提现已到账', debt: false },
-      { key: 'pendingAftersale', label: '待售后', hint: '售后异常冻结', debt: true },
+      { key: 'withdrawn', label: '已提现', hint: '提现已到账', debt: false },
+      { key: 'pendingOffset', label: '待冲抵', hint: '售后需冲抵金额', debt: true },
     ];
 
-    const statHtml = cards.map((c) => {
-      const cls = c.debt ? 'stat-card debt' : 'stat-card';
-      const valCls = c.debt ? 'stat-value debt' : 'stat-value';
-      return `<div class="${cls}">
-        <div class="stat-label">${c.label}</div>
-        <div class="${valCls}">${S.fmtMoney(acc[c.key])}</div>
-        <div class="stat-hint">${c.hint}</div>
-      </div>`;
-    }).join('');
+    const statHtml = cards.map((c) => `<div class="${c.debt ? 'stat-card debt' : 'stat-card'}">
+      <div class="stat-label">${c.label}</div>
+      <div class="${c.debt ? 'stat-value debt' : 'stat-value'}">${S.fmtMoney(acc[c.key])}</div>
+      <div class="stat-hint">${c.hint}</div>
+    </div>`).join('');
 
-    return `<div class="stat-grid">${statHtml}</div>
-      ${acc.pendingAftersale > 0 ? `<div class="alert alert-danger">
-        <i class="ri-error-warning-line"></i> 待售后 ¥${acc.pendingAftersale.toLocaleString()} 为独立欠款池，不参与额度抵扣，请尽快补款。
-      </div>` : ''}
+    const offsetAlert = offset > 0 ? `<div class="alert alert-warning">
+      <i class="ri-error-warning-line"></i> 待冲抵 ${S.fmtMoney(offset)} 为独立欠款池。提现时「可提现」须先抵扣「待冲抵」，剩余部分方可提现。
+      ${withdrawable <= offset ? '<strong>当前可提现金额不足以抵扣待冲抵，暂不可发起提现。</strong>' : ''}
+    </div>` : '';
+
+    return `<div class="stat-grid">${statHtml}</div>${offsetAlert}
       <div class="withdraw-cta">
         <div>
-          <div style="font-size:12px;color:var(--gray-400)">当前可提现金额</div>
-          <div class="amount">${S.fmtMoney(acc.withdrawable)}</div>
+          <div style="font-size:12px;color:var(--gray-400)">可提现 ${S.fmtMoney(withdrawable)} · 待冲抵 ${S.fmtMoney(offset)} · 净可提 ${S.fmtMoney(net)}</div>
+          <div class="amount">${S.fmtMoney(net)}</div>
           ${active ? `<div style="font-size:12px;color:var(--warning);margin-top:4px">已有进行中提现单 ${active.id}</div>` : ''}
         </div>
         <button class="btn btn-primary" data-apply-withdraw ${canWithdraw ? '' : 'disabled'}>
           <i class="ri-bank-card-line"></i> 申请提现（全额）
         </button>
-      </div>
-      ${renderListSection()}`;
+      </div>${renderListSection()}`;
   }
 
   function buildWithdrawDetailContent(w) {
     const steps = [
       { label: '提交申请', done: true, time: w.applyTime },
-      { label: '平台审批', done: w.status !== '待审核' && w.status !== '已撤销', time: w.auditTime },
+      { label: '平台审批', done: w.status !== '待审核', time: w.auditTime },
       { label: '财务打款', done: w.status === '已完结', time: w.payRegisterTime },
     ];
-
-    const timeline = steps.map((s) =>
-      `<div class="timeline-item">
-        <div class="timeline-time">${s.time ? S.fmtDate(s.time) : '—'}</div>
-        <div class="timeline-desc">${s.label} ${s.done ? '<span class="badge badge-green">已完成</span>' : '<span class="badge badge-gray">待完成</span>'}</div>
-      </div>`).join('');
+    const timeline = steps.map((s) => `<div class="timeline-item">
+      <div class="timeline-time">${s.time ? S.fmtDate(s.time) : '—'}</div>
+      <div class="timeline-desc">${s.label} ${s.done ? '<span class="badge badge-green">已完成</span>' : '<span class="badge badge-gray">待完成</span>'}</div>
+    </div>`).join('');
 
     return `<div class="detail-grid">
-        <div class="detail-item"><label>申请金额</label><span style="font-size:18px;font-weight:700">${S.fmtMoney(w.amount)}</span></div>
-        <div class="detail-item"><label>状态</label><span class="badge ${S.statusBadgeClass(w.status)}">${S.escapeHtml(w.status)}</span></div>
-        <div class="detail-item"><label>关联结算单</label><span>${S.escapeHtml(w.settlementId)}</span></div>
-        <div class="detail-item"><label>申请时间</label><span>${S.fmtDate(w.applyTime)}</span></div>
-        ${w.auditor ? `<div class="detail-item"><label>审核人</label><span>${S.escapeHtml(w.auditor)}</span></div>` : ''}
-        ${w.auditTime ? `<div class="detail-item"><label>审核时间</label><span>${S.fmtDate(w.auditTime)}</span></div>` : ''}
-        ${w.payRegisterTime ? `<div class="detail-item"><label>打款时间</label><span>${S.fmtDate(w.payRegisterTime)}</span></div>` : ''}
-        ${w.rejectReason ? `<div class="detail-item" style="grid-column:1/-1"><label>驳回原因</label><span style="color:var(--danger)">${S.escapeHtml(w.rejectReason)}</span></div>` : ''}
-      </div>
-      <div class="section-title">进度时间线</div>
-      <div class="timeline">${timeline}</div>`;
+      <div class="detail-item"><label>申请金额</label><span style="font-size:18px;font-weight:700">${S.fmtMoney(w.amount)}</span></div>
+      <div class="detail-item"><label>状态</label><span class="badge ${S.statusBadgeClass(w.status)}">${S.escapeHtml(w.status)}</span></div>
+      <div class="detail-item"><label>关联结算单</label><span>${S.escapeHtml(w.settlementId)}</span></div>
+      <div class="detail-item"><label>申请时间</label><span>${S.fmtDate(w.applyTime)}</span></div>
+      ${w.auditor ? `<div class="detail-item"><label>审核人</label><span>${S.escapeHtml(w.auditor)}</span></div>` : ''}
+      ${w.auditTime ? `<div class="detail-item"><label>审核时间</label><span>${S.fmtDate(w.auditTime)}</span></div>` : ''}
+      ${w.payRegisterTime ? `<div class="detail-item"><label>打款时间</label><span>${S.fmtDate(w.payRegisterTime)}</span></div>` : ''}
+      ${w.rejectReason ? `<div class="detail-item" style="grid-column:1/-1"><label>驳回原因</label><span style="color:var(--danger)">${S.escapeHtml(w.rejectReason)}</span></div>` : ''}
+    </div>
+    <div class="section-title">进度时间线</div><div class="timeline">${timeline}</div>`;
   }
 
   function showWithdrawDetailModal(id) {
     state = S.loadState();
     const w = (state.withdrawals || []).find((x) => x.id === id);
     if (!w) { toast('提现单不存在'); return; }
-
-    const cancelBtn = w.status === '待审核'
-      ? `<button class="btn btn-danger btn-sm" data-cancel-withdraw="${w.id}"><i class="ri-close-circle-line"></i> 撤销提现</button>` : '';
-
     openModal(`<div class="modal modal-lg">
-      <div class="modal-header">
-        <strong>提现详情 · ${S.escapeHtml(w.id)}</strong>
-        <button class="btn-ghost" data-modal-close><i class="ri-close-line"></i></button>
-      </div>
+      <div class="modal-header"><strong>提现详情 · ${S.escapeHtml(w.id)}</strong><button class="btn-ghost" data-modal-close><i class="ri-close-line"></i></button></div>
       <div class="modal-body">${buildWithdrawDetailContent(w)}</div>
-      <div class="modal-footer">
-        ${cancelBtn}
-        <button class="btn btn-secondary" data-modal-close>关闭</button>
-      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" data-modal-close>关闭</button></div>
     </div>`);
+    document.querySelectorAll('[data-modal-close]').forEach((el) => el.addEventListener('click', closeOverlay));
+  }
 
-    document.querySelectorAll('[data-modal-close]').forEach((el) => {
-      el.addEventListener('click', closeOverlay);
+  function showWithdrawConfirm() {
+    const acc = state.account;
+    const amount = acc.withdrawable || 0;
+    const offset = acc.pendingOffset || 0;
+    const net = S.getNetWithdrawable(state);
+    const orders = S.getWithdrawableOrders(state);
+    const ba = state.merchant.bankAccount;
+
+    openModal(`<div class="modal-header"><strong>确认申请提现</strong><button class="btn-ghost" onclick="SellerApp.closeModal()"><i class="ri-close-line"></i></button></div>
+      <div class="modal-body">
+        <div class="alert alert-info">按规则须全额提现。提交后金额从「可提现」转入「提现中」；财务打款后「待冲抵」归零。</div>
+        <div class="detail-grid">
+          <div class="detail-item"><label>可提现金额</label><span>${S.fmtMoney(amount)}</span></div>
+          <div class="detail-item"><label>待冲抵金额</label><span style="color:var(--danger)">${S.fmtMoney(offset)}</span></div>
+          <div class="detail-item"><label>净到账金额</label><span style="font-size:20px;font-weight:700;color:#7c3aed">${S.fmtMoney(net)}</span></div>
+          <div class="detail-item"><label>纳入订单</label><span>${orders.length} 笔</span></div>
+          <div class="detail-item"><label>收款账户</label><span>${S.escapeHtml(ba.account)}</span></div>
+          <div class="detail-item"><label>开户行</label><span>${S.escapeHtml(ba.bank)}</span></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="SellerApp.closeModal()">取消</button>
+        <button class="btn btn-primary" data-confirm-withdraw>确认提交</button>
+      </div>`);
+    document.querySelector('[data-confirm-withdraw]').addEventListener('click', () => {
+      const r = S.applyWithdrawal(state);
+      closeOverlay();
+      if (r.ok) { toast('提现申请已提交'); ui.listTab = 'withdrawals'; render(); showWithdrawDetailModal(r.withdrawalId); }
+      else toast(r.msg);
     });
-    const cancelEl = document.querySelector('[data-cancel-withdraw]');
-    if (cancelEl) {
-      cancelEl.addEventListener('click', () => {
-        const r = S.cancelWithdrawal(state, cancelEl.dataset.cancelWithdraw);
-        if (r.ok) { closeOverlay(); toast('提现已撤销'); render(); }
-        else toast(r.msg);
-      });
-    }
   }
 
   function renderShell(content) {
@@ -1330,83 +1359,42 @@ window.BM_DEMO = {
       </div>`;
   }
 
+  function bindEvents() {
+    document.querySelectorAll('[data-list-tab]').forEach((el) => el.addEventListener('click', () => {
+      ui.listTab = el.dataset.listTab; route.id = ''; location.hash = '#/account'; render();
+    }));
+    document.querySelectorAll('[data-goto-withdraw]').forEach((el) => el.addEventListener('click', () => showWithdrawDetailModal(el.dataset.gotoWithdraw)));
+    document.querySelector('[data-order-filter]')?.addEventListener('click', () => {
+      ui.orderWithdrawFilter = document.querySelector('[data-order-wd-filter]')?.value || '';
+      ui.orderDateFrom = document.querySelector('[data-order-date-from]')?.value || '';
+      ui.orderDateTo = document.querySelector('[data-order-date-to]')?.value || '';
+      render();
+    });
+    document.querySelector('[data-wd-filter]')?.addEventListener('click', () => {
+      ui.withdrawStatusFilter = document.querySelector('[data-wd-status-filter]')?.value || '';
+      ui.withdrawDateFrom = document.querySelector('[data-wd-date-from]')?.value || '';
+      ui.withdrawDateTo = document.querySelector('[data-wd-date-to]')?.value || '';
+      render();
+    });
+    document.querySelector('[data-offset-filter]')?.addEventListener('click', () => {
+      ui.offsetTypeFilter = document.querySelector('[data-offset-type-filter]')?.value || '';
+      ui.offsetDateFrom = document.querySelector('[data-offset-date-from]')?.value || '';
+      ui.offsetDateTo = document.querySelector('[data-offset-date-to]')?.value || '';
+      render();
+    });
+    document.querySelector('[data-apply-withdraw]')?.addEventListener('click', showWithdrawConfirm);
+    document.querySelector('[data-reset-demo]')?.addEventListener('click', () => {
+      state = S.resetDemo(); toast('已恢复演示数据'); render();
+    });
+  }
+
   function render() {
     state = S.loadState();
     renderShell(renderAccount());
     bindEvents();
   }
 
-  function bindEvents() {
-    document.querySelectorAll('[data-list-tab]').forEach((el) => {
-      el.addEventListener('click', () => {
-        ui.listTab = el.dataset.listTab;
-        route.id = '';
-        location.hash = '#/account';
-        render();
-      });
-    });
-    document.querySelectorAll('[data-goto-withdraw]').forEach((el) => {
-      el.addEventListener('click', () => showWithdrawDetailModal(el.dataset.gotoWithdraw));
-    });
-    const orderFilterBtn = document.querySelector('[data-order-filter]');
-    if (orderFilterBtn) orderFilterBtn.addEventListener('click', () => {
-      ui.orderWithdrawFilter = document.querySelector('[data-order-wd-filter]')?.value || '';
-      ui.orderDateFrom = document.querySelector('[data-order-date-from]')?.value || '';
-      ui.orderDateTo = document.querySelector('[data-order-date-to]')?.value || '';
-      render();
-    });
-    const wdFilterBtn = document.querySelector('[data-wd-filter]');
-    if (wdFilterBtn) wdFilterBtn.addEventListener('click', () => {
-      ui.withdrawStatusFilter = document.querySelector('[data-wd-status-filter]')?.value || '';
-      ui.withdrawDateFrom = document.querySelector('[data-wd-date-from]')?.value || '';
-      ui.withdrawDateTo = document.querySelector('[data-wd-date-to]')?.value || '';
-      render();
-    });
-    const applyBtn = document.querySelector('[data-apply-withdraw]');
-    if (applyBtn) applyBtn.addEventListener('click', showWithdrawConfirm);
-    const resetBtn = document.querySelector('[data-reset-demo]');
-    if (resetBtn) resetBtn.addEventListener('click', () => {
-      state = S.resetDemo();
-      toast('已恢复演示数据');
-      render();
-    });
-  }
-
-  function showWithdrawConfirm() {
-    const amount = state.account.withdrawable || 0;
-    const orders = S.getWithdrawableOrders(state);
-    openModal(`<div class="modal-header"><strong>确认申请提现</strong>
-        <button class="btn-ghost" onclick="SellerApp.closeModal()"><i class="ri-close-line"></i></button></div>
-      <div class="modal-body">
-        <div class="alert alert-info">按规则须全额提现，不支持部分金额。提交后金额将从「可提现」转入「提现中」。</div>
-        <div class="detail-grid">
-          <div class="detail-item"><label>提现金额</label><span style="font-size:20px;font-weight:700;color:#7c3aed">${S.fmtMoney(amount)}</span></div>
-          <div class="detail-item"><label>纳入订单</label><span>${orders.length} 笔</span></div>
-          <div class="detail-item"><label>收款账户</label><span>${S.escapeHtml(state.merchant.bankAccount.account)}</span></div>
-          <div class="detail-item"><label>开户行</label><span>${S.escapeHtml(state.merchant.bankAccount.bank)}</span></div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="SellerApp.closeModal()">取消</button>
-        <button class="btn btn-primary" data-confirm-withdraw>确认提交</button>
-      </div>`);
-    document.querySelector('[data-confirm-withdraw]').addEventListener('click', () => {
-      const r = S.applyWithdrawal(state);
-      closeOverlay();
-      if (r.ok) {
-        toast('提现申请已提交');
-        ui.listTab = 'withdrawals';
-        render();
-        showWithdrawDetailModal(r.withdrawalId);
-      } else toast(r.msg);
-    });
-  }
-
-  window.SellerApp = {
-    closeModal(e) { if (!e || e.target.classList.contains('modal-overlay')) closeOverlay(); },
-    navigate,
-    render,
-  };
+  window.SellerApp = { closeModal(e) { if (!e || e.target.classList.contains('modal-overlay')) closeOverlay(); }, navigate, render };
 
   function openWithdrawFromHash() {
     if (!route.id) return;
@@ -1418,14 +1406,9 @@ window.BM_DEMO = {
     showWithdrawDetailModal(id);
   }
 
-  window.addEventListener('hashchange', () => {
-    parseRoute();
-    if (route.id) openWithdrawFromHash();
-    else render();
-  });
+  window.addEventListener('hashchange', () => { parseRoute(); if (route.id) openWithdrawFromHash(); else render(); });
   parseRoute();
-  if (route.id) openWithdrawFromHash();
-  else render();
+  if (route.id) openWithdrawFromHash(); else render();
 })();
 
   </script>
